@@ -1,0 +1,100 @@
+HOW TO GET A REAL, INSTALLABLE .APK FOR TMI CASEWORK HUB
+=============================================================
+
+This uses two free tools together:
+  - GitHub Pages: gives the app a permanent web address (needed once,
+    then left alone — you won't touch it again after this)
+  - PWABuilder (by Microsoft): reads that address and builds you a real
+    signed Android .apk file to download and install
+
+No coding at any point. About 15–20 minutes, done from a phone or
+computer browser.
+
+
+PART 1 — PUT THE APP ON GITHUB PAGES (free, permanent, one-time)
+----------------------------------------------------------------------
+  1. Go to https://github.com and create a free account if you don't
+     have one already (top right → Sign up).
+
+  2. Once logged in, click the "+" icon (top right) → "New repository".
+
+  3. Name it something like "tmi-hub" (any name is fine). Leave
+     everything else as default. Click "Create repository".
+
+  4. On the new repository's page, click "uploading an existing file"
+     (or "Add file" → "Upload files").
+
+  5. Unzip the TMI-Casework-Hub-App.zip you already have, and drag in
+     ALL of its contents — index.html, manifest.json, service-worker.js,
+     and the whole icons/ folder — keeping the icons folder structure
+     intact. Commit the upload ("Commit changes").
+
+  6. Go to the repository's Settings tab → Pages (left-hand menu).
+     Under "Branch", choose "main" and folder "/ (root)" → Save.
+
+  7. GitHub shows you a web address like:
+        https://yourusername.github.io/tmi-hub/
+     It can take 1–2 minutes to go live the first time. Open it in a
+     browser to confirm the Hub loads correctly.
+
+Keep this address — it's the "permanent web address" the APK will use.
+You never need to log into GitHub again after this unless you want to
+update the app later.
+
+
+PART 2 — BUILD THE .APK WITH PWABUILDER (free)
+----------------------------------------------------
+  1. Go to https://www.pwabuilder.com
+
+  2. Paste in your GitHub Pages address from Part 1 and click "Start".
+
+  3. PWABuilder scans the site and shows a report card. You don't need
+     a perfect score — click "Package for Stores".
+
+  4. Choose "Android" as the platform.
+
+  5. It'll offer some options (package ID, app name, signing key). The
+     defaults are fine for personal use — you can leave "Signing key"
+     on "Generate new signing key" (PWABuilder creates one for you
+     automatically, no setup needed).
+
+  6. Click "Generate" / "Download". It gives you a .zip containing a
+     ready-to-install .apk file (and an .aab, which is only needed for
+     the Play Store — you don't need that one).
+
+
+PART 3 — INSTALL THE .APK ON YOUR PHONE
+------------------------------------------
+  1. Get that .apk file onto your phone (email it to yourself, save it
+     to Drive and download on the phone, or USB transfer).
+
+  2. Tap the .apk file in your Files app. Android will likely ask you
+     to allow "install unknown apps" for whichever app you're opening
+     it from (Files, Chrome, etc.) — allow it, this is normal for any
+     app installed outside the Play Store.
+
+  3. Tap Install. You now have a genuine TMI Casework Hub app icon,
+     opening full-screen with no browser bar, just like any Play Store
+     app.
+
+
+WHAT TO EXPECT
+------------------
+- Your data (cases, clients, documents) still lives only on this
+  phone, inside this app — exactly as before. GitHub Pages only hosts
+  the empty app shell code, never your actual case data.
+- The app loads from your GitHub Pages address each time you open it,
+  then works offline afterwards thanks to the service worker caching
+  it on first load. As long as you don't delete the GitHub repository,
+  this keeps working indefinitely for free.
+- If you ever want to update the app (new features, bug fixes), you'd
+  upload the new index.html to the same GitHub repository, and your
+  installed app picks up the update automatically next time it's
+  online — no reinstalling needed.
+
+
+IF YOU'D RATHER I WALK YOU THROUGH PART 1 LIVE
+----------------------------------------------------
+Come back here once you've created the GitHub account and repository,
+and I can talk you through the upload step by step, or troubleshoot
+anything that doesn't look right before you move on to PWABuilder.

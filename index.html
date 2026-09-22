@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>TMI Casework Hub</title>
+<meta name="theme-color" content="#1F3864" />
+<meta name="description" content="TMI Casework Hub — offline-first casework management for Legal & Administrative Casework Consultancy." />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="TMI Hub" />
+<meta name="mobile-web-app-capable" content="yes" />
+<style>
+:root{
+  --navy:#1F3864; --navy-dark:#152848; --gold:#8C6D46; --gold-light:#c9a877;
+  --charcoal:#333; --line:#e2e2e2; --cream:#F5F1EA; --white:#fff; --grey:#6b6b6b;
+  --red:#b3261e; --amber:#a56a1d; --green:#2e7d4f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;background:var(--cream);font-family:-apple-system,Roboto,Arial,sans-serif;color:var(--charcoal)}
+h1,h2,h3,h4{font-family:Georgia,'Times New Roman',serif;color:var(--navy);margin:0 0 8px}
+a{color:var(--navy)}
+button{font-family:inherit;cursor:pointer}
+#app{padding-bottom:70px;min-height:100vh}
+.header{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.header .menu-btn{background:none;border:none;color:#fff;font-size:22px;padding:4px 8px}
+.header .title{font-family:Georgia,serif;font-weight:700;font-size:18px;flex:1}
+.header .sub{font-size:11px;color:#b9c3d9;display:block}
+.container{padding:14px;max-width:720px;margin:0 auto}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.eyebrow{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px;text-align:center;display:block;text-decoration:none;color:inherit}
+.stat-card:active{background:#f7f7f7}
+.stat-card .num{font-size:26px;font-weight:700;color:var(--navy);font-family:Georgia,serif}
+.stat-card.alert .num{color:var(--red)}
+.stat-card .lbl{font-size:12px;color:var(--grey);margin-top:2px}
+.card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.card:active{background:#fafafa}
+.card-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.case-num{font-family:Georgia,serif;font-weight:700;color:var(--navy);font-size:15px}
+.case-sub{font-size:12.5px;color:var(--grey);margin-top:2px}
+.pill{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.02em;padding:3px 9px;border-radius:10px;white-space:nowrap;text-transform:uppercase}
+.pill-navy{background:#e7ecf5;color:var(--navy)}
+.pill-amber{background:#fbeedd;color:var(--amber)}
+.pill-red{background:#fbe4e2;color:var(--red)}
+.pill-green{background:#e3f2e9;color:var(--green)}
+.pill-grey{background:#eee;color:#666}
+.next-action{margin-top:6px;font-size:12.5px;color:var(--charcoal);background:var(--cream);padding:6px 8px;border-radius:6px}
+.next-action b{color:var(--navy)}
+.overdue-text{color:var(--red);font-weight:700}
+.fab{position:fixed;right:18px;bottom:82px;background:var(--gold);color:#fff;border:none;width:54px;height:54px;border-radius:50%;font-size:28px;box-shadow:0 4px 12px rgba(0,0,0,.25);z-index:15}
+.bottomnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;z-index:20}
+.bottomnav button{flex:1;background:none;border:none;padding:9px 2px 8px;font-size:10.5px;color:var(--grey);display:flex;flex-direction:column;align-items:center;gap:2px}
+.bottomnav button.active{color:var(--navy);font-weight:700}
+.bottomnav .ic{font-size:18px}
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;display:none}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:250px;background:#fff;z-index:31;transform:translateX(-100%);transition:transform .2s;padding:16px 0;overflow-y:auto}
+.drawer.open{transform:translateX(0)}
+.drawer-overlay.open{display:block}
+.drawer h3{padding:0 16px;color:var(--gold);font-size:12px;text-transform:uppercase;letter-spacing:.04em;margin:14px 0 6px}
+.drawer a{display:block;padding:10px 16px;color:var(--charcoal);text-decoration:none;font-size:14.5px;border-left:3px solid transparent}
+.drawer a:active,.drawer a.active{background:var(--cream);border-left-color:var(--gold);color:var(--navy);font-weight:700}
+.modal-overlay{position:fixed;inset:0;background:rgba(10,15,30,.5);z-index:40;display:none;align-items:flex-end}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;width:100%;max-height:92vh;overflow-y:auto;border-radius:14px 14px 0 0;padding:18px}
+@media(min-width:620px){.modal-overlay{align-items:center;justify-content:center}.modal{max-width:560px;border-radius:12px}}
+.modal h2{font-size:19px}
+.modal-close{float:right;background:none;border:none;font-size:22px;color:var(--grey)}
+label{display:block;font-size:12.5px;font-weight:700;color:var(--navy);margin:12px 0 4px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font-size:15px;font-family:inherit;background:#fff}
+textarea{resize:vertical}
+.btn{display:inline-block;border:none;border-radius:6px;padding:11px 18px;font-weight:700;font-size:14.5px;text-decoration:none;text-align:center}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-outline{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.btn-danger{background:#fff;color:var(--red);border:1px solid var(--red)}
+.btn-block{display:block;width:100%;margin-top:16px}
+.btn-sm{padding:6px 12px;font-size:12.5px}
+.tabbar{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:4px;margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:2px}
+.tabbar button{background:none;border:none;padding:8px 8px;font-size:12.5px;color:var(--grey);white-space:nowrap;border-bottom:2px solid transparent;flex-shrink:0}
+.tabbar button.active{color:var(--navy);font-weight:700;border-bottom-color:var(--gold)}
+.field-view{margin-bottom:10px;font-size:14px}
+.field-view .fk{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--gold);font-weight:700;display:block;margin-bottom:2px}
+.field-view .fv{white-space:pre-wrap}
+.empty{text-align:center;color:var(--grey);padding:30px 10px;font-size:14px}
+.searchbox{position:sticky;top:56px;background:var(--cream);padding:10px 14px;z-index:10}
+.searchbox input{background:#fff}
+hr{border:none;border-top:1px solid var(--line);margin:16px 0}
+.small{font-size:12px;color:var(--grey)}
+.timeline-item{border-left:2px solid var(--line);padding:0 0 14px 14px;margin-left:5px;position:relative}
+.timeline-item:before{content:"";position:absolute;left:-6px;top:2px;width:10px;height:10px;border-radius:50%;background:var(--gold)}
+.timeline-date{font-size:11px;color:var(--grey);font-weight:700}
+.linkline{word-break:break-all}
+.footer-note{text-align:center;font-size:11px;color:#999;padding:14px}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;z-index:50;opacity:0;transition:opacity .25s}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="menu-btn" onclick="openDrawer()">&#9776;</button>
+  <div><span class="title">TMI Casework Hub</span><span class="sub">Legal &amp; Administrative Casework</span></div>
+</div>
+
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <h3>Workflow</h3>
+  <a href="#/dashboard" onclick="closeDrawer()">Dashboard</a>
+  <a href="#/enquiries" onclick="closeDrawer()">Enquiries</a>
+  <a href="#/clients" onclick="closeDrawer()">Clients</a>
+  <a href="#/cases" onclick="closeDrawer()">Cases</a>
+  <h3>Operations</h3>
+  <a href="#/tasks" onclick="closeDrawer()">Tasks</a>
+  <a href="#/documents" onclick="closeDrawer()">Documents</a>
+  <a href="#/communications" onclick="closeDrawer()">Communications</a>
+  <a href="#/search" onclick="closeDrawer()">Search</a>
+  <h3>System</h3>
+  <a href="#/manual" onclick="closeDrawer()">Operating Manual (T01&ndash;T16)</a>
+  <a href="#/settings" onclick="closeDrawer()">Backup &amp; Settings</a>
+</div>
+
+<div id="app"></div>
+
+<button class="fab" id="fab" style="display:none" onclick="fabAction()">+</button>
+
+<div class="bottomnav">
+  <button data-r="dashboard" onclick="location.hash='#/dashboard'"><span class="ic">&#8962;</span>Home</button>
+  <button data-r="enquiries" onclick="location.hash='#/enquiries'"><span class="ic">&#9993;</span>Enquiries</button>
+  <button data-r="cases" onclick="location.hash='#/cases'"><span class="ic">&#128193;</span>Cases</button>
+  <button data-r="tasks" onclick="location.hash='#/tasks'"><span class="ic">&#10003;</span>Tasks</button>
+  <button data-r="search" onclick="location.hash='#/search'"><span class="ic">&#128269;</span>Search</button>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalBody"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============== CONSTANTS ============== */
+const CASE_STATUSES = [
+  ['NEW','New','grey'],['INTAKE','Intake','grey'],['ASSESSMENT','Assessment','amber'],
+  ['AWAITING_ENGAGEMENT','Awaiting Engagement','amber'],['ACTIVE','Active Casework','navy'],
+  ['AWAITING_CLIENT','Awaiting Client','amber'],['AWAITING_THIRD_PARTY','Awaiting Third Party','amber'],
+  ['FOLLOW_UP','Follow-Up','amber'],['ESCALATION_REFERRAL','Escalation / Referral','red'],
+  ['RESOLUTION','Resolution','green'],['CLOSED','Closed','grey']
+];
+const ENQUIRY_STATUSES = [
+  ['NEW','New','grey'],['CONTACTED','Contacted','navy'],['INFORMATION_GATHERING','Information Gathering','amber'],
+  ['ASSESSMENT_REQUIRED','Assessment Required','amber'],['ASSESSMENT_BOOKED','Assessment Booked','navy'],
+  ['PROCEEDING','Proceeding (Converted)','green'],['NOT_PROCEEDING','Not Proceeding','grey']
+];
+const TASK_STATUSES = [['TO_DO','To Do'],['IN_PROGRESS','In Progress'],['WAITING','Waiting'],['COMPLETED','Completed'],['CANCELLED','Cancelled']];
+const PRIORITIES = [['LOW','Low'],['NORMAL','Normal'],['HIGH','High']];
+const CATEGORIES = ['Money & Benefits','Estates & Inheritance','Disputes & Complaints','Contracts & Property','Institutional Problems','Administrative / Other'];
+const CHANNELS = ['WhatsApp','Email','Phone','Meeting','Letter','Website','Other'];
+const DIRECTIONS = ['Inbound','Outbound'];
+const DOC_TYPES = ['Identification','Client Evidence','Institutional Record','Contract','Court/Legal Document','Correspondence','Research','Draft','Submission','Response','Final','Other'];
+const ASSESS_OUTCOMES = ['Proceed','Proceed Subject to Information','Refer','Outside TMI Scope','No Further Action','Client Declined'];
+const WORK_TYPES = {
+  'Money & Benefits': ['Money Tracing','Entitlement Assessment','Claim Preparation'],
+  'Estates & Inheritance': ['Estate Investigation','Beneficiary Dispute','Executor Correspondence'],
+  'Disputes & Complaints': ['Dispute Preparation','Institutional Complaint','CCMA/Ombud Preparation'],
+  'Contracts & Property': ['Contract Review','Contract Drafting','Property Matter'],
+  'Institutional Problems': ['Institutional Follow-up','Benefits/Account Problem'],
+  'Administrative / Other': ['Document Preparation','Research Memorandum','General Casework']
+};
+const CHECKLIST_TEMPLATES = {
+  'Contract Review': ['Confirm parties and authority to sign','Confirm subject matter/property correctly identified','Check payment amounts, dates and escalation','Check duration, renewal and termination terms','Check liability, indemnity and dispute mechanism','Note missing or unclear clauses','Prepare recommended changes'],
+  'Contract Drafting': ['Confirm instructions and objective','Identify required clauses','Draft agreement','Client review','Finalise and deliver'],
+  'Estate Investigation': ['Obtain death certificate','Obtain L&D account','Confirm beneficiaries','Reconstruct family relationships','Identify discrepancies in distribution','Draft correspondence to executor/Master'],
+  'Beneficiary Dispute': ['Confirm relationship to deceased','Review will/intestate succession position','Identify basis of dispute','Gather supporting documents','Draft correspondence'],
+  'Executor Correspondence': ['Confirm executor details','Set out request clearly','Draft letter','Send and record date','Diarise follow-up'],
+  'Money Tracing': ['Confirm entitlement basis','Search relevant registers/institution','Confirm identity documents required','Prepare claim submission','Track submission status'],
+  'Entitlement Assessment': ['Confirm what entitlement is claimed','Gather supporting evidence','Assess likely validity','Advise client of route'],
+  'Claim Preparation': ['Confirm claim requirements','Gather documents','Complete claim submission','Submit and record reference','Track response'],
+  'Institutional Complaint': ['Identify correct institution/department','Gather chronology and evidence','Draft complaint','Submit and record reference number','Track response deadline'],
+  'Dispute Preparation': ['Establish facts and chronology','Identify parties','Identify procedural route','Gather evidence','Prepare submission'],
+  'CCMA/Ombud Preparation': ['Confirm jurisdiction and time limits','Gather chronology and evidence','Complete referral/complaint form','Prepare supporting bundle','Confirm filing'],
+  'Institutional Follow-up': ['Confirm reference number','Confirm last contact date','Draft follow-up','Escalate if no response'],
+  'Document Preparation': ['Confirm purpose and audience of document','Gather supporting facts/evidence','Draft document','Client review','Finalise and deliver'],
+  'Research Memorandum': ['Confirm research question','Identify sources','Research and record findings','Draft memorandum','Review conclusions']
+};
+
+const KEYS = ['clients','enquiries','cases','tasks','communications','documents','drafts','manual','settings'];
+let DB = {clients:[],enquiries:[],cases:[],tasks:[],communications:[],documents:[],drafts:[],manual:[],settings:{nextSeq:1,seqYear:new Date().getFullYear()}};
+const MANUAL_CODES = Array.from({length:16},(_,i)=>'T'+String(i+1).padStart(2,'0'));
+function ensureManual(){
+  if(!Array.isArray(DB.manual)) DB.manual = [];
+  MANUAL_CODES.forEach(code=>{
+    if(!DB.manual.find(m=>m.code===code)) DB.manual.push({code, title:'', body:'', fileId:null, fileName:null, fileType:null, updated:''});
+  });
+}
+function manualByCode(code){ return DB.manual.find(m=>m.code===code); }
+
+/* ============== DOCUMENT TEMPLATES ============== */
+function letterHeader(c,cl,date){
+  return `TMI — Legal & Administrative Casework Consultancy\n${fmtDate(date)}\n\nRe: ${c.title} (Ref: ${c.id})\n${cl?('Client: '+cl.name):''}\n\n`;
+}
+function letterFooter(){
+  return `\n\nRegards,\nTMI\ntmi.legaladmin@gmail.com | +27 75 997 3396`;
+}
+function reportHeader(c,cl,date){
+  return `CASE ASSESSMENT REPORT\nCase: ${c.id} — ${c.title}\nClient: ${cl?cl.name:'—'}\nDate: ${fmtDate(date)}\n\n`;
+}
+const TEMPLATES = {
+  assessment_report: { label:'Case Assessment Report', kind:'report', fields:[],
+    bodyBuilder:(c)=>{ const a=c.assessment||{};
+      return [['ISSUE',a.issue],['FACTS ESTABLISHED',a.facts],['MISSING INFORMATION',a.missingInfo],
+        ['RELEVANT PARTIES',a.parties],['RELEVANT INSTITUTION',a.institution],['RESEARCH NOTES',a.researchNotes],
+        ['POSSIBLE ROUTES',a.routes],['RECOMMENDED NEXT STEP',a.recommendedNext],['SCOPE OF TMI WORK',a.scope],
+        ['LIMITATIONS',a.limitations],['REFERRAL REQUIRED',a.referralRequired],['ASSESSMENT OUTCOME',a.outcome]
+      ].map(([k,v])=>k+'\n'+(v||'—')).join('\n\n'); } },
+  engagement_letter: { label:'Engagement Letter (Scope & Fee)', kind:'letter',
+    fields:[
+      {name:'scopeText',label:'Scope of Work',type:'textarea',default:c=>(c.assessment&&c.assessment.scope)||''},
+      {name:'feeText',label:'Fee Arrangement',type:'text',default:c=>c.feeArrangement||''},
+      {name:'timeline',label:'Expected Timeline',type:'text',default:()=>''},
+      {name:'closing',label:'Closing note',type:'textarea',default:()=>'Please confirm your acceptance of this scope and fee so that TMI can proceed.'}],
+    bodyBuilder:(c,cl,v)=>`Dear ${cl?cl.name:'Client'},\n\nFollowing TMI's assessment of your matter (${c.id} — ${c.title}), TMI proposes to proceed on the following basis:\n\nSCOPE OF WORK\n${v.scopeText||'—'}\n\nFEE\n${v.feeText||'—'}\n\nEXPECTED TIMELINE\n${v.timeline||'—'}\n\n${v.closing||''}` },
+  institution_letter: { label:'Institution / Third-Party Correspondence', kind:'letter',
+    fields:[
+      {name:'institutionName',label:'Institution / Recipient',type:'text',default:c=>(c.assessment&&c.assessment.institution)||''},
+      {name:'referenceNumber',label:"Their reference (if any)",type:'text',default:()=>''},
+      {name:'requestBody',label:'Request / Enquiry',type:'textarea',default:()=>''}],
+    bodyBuilder:(c,cl,v)=>`To: ${v.institutionName||'—'}\n${v.referenceNumber?('Your ref: '+v.referenceNumber+'\n'):''}\nTMI writes on behalf of our client, ${cl?cl.name:'—'}, in connection with the above matter (TMI ref: ${c.id}).\n\n${v.requestBody||'—'}\n\nWe would be grateful for your response at your earliest convenience.` },
+  client_update: { label:'Client Update Letter', kind:'letter',
+    fields:[{name:'updateBody',label:'Update to client',type:'textarea',default:c=>c.nextAction||''}],
+    bodyBuilder:(c,cl,v)=>`Dear ${cl?cl.name:'Client'},\n\nAn update on your matter (${c.id} — ${c.title}):\n\n${v.updateBody||'—'}\n\nWe will keep you informed as the matter progresses.` },
+  closure_report: { label:'Closure / Outcome Letter', kind:'letter', fields:[],
+    bodyBuilder:(c,cl)=>{ const z=c.closure||{};
+      return `Dear ${cl?cl.name:'Client'},\n\nThis letter confirms the closure of your matter (${c.id} — ${c.title}).\n\nOUTCOME\n${z.outcome||'—'}\n\nWORK COMPLETED\n${z.workCompleted||'—'}\n\nOUTSTANDING MATTERS\n${z.outstanding||'—'}\n\nDocuments delivered: ${z.documentsDelivered?'Yes':'No'}\nReferral made: ${z.referralMade?'Yes':'No'}\n\nThank you for the opportunity to assist with this matter.`; } },
+  blank: { label:'Blank Document', kind:'letter',
+    fields:[{name:'body',label:'Body',type:'textarea',default:()=>''}],
+    bodyBuilder:(c,cl,v)=>v.body||'' }
+};
+function fullDocText(d,c,cl){
+  const t = TEMPLATES[d.templateKey]; const date = d.values.docDate || d.created || todayStr();
+  const body = t.bodyBuilder(c,cl,d.values||{});
+  return t.kind==='report' ? reportHeader(c,cl,date)+body : letterHeader(c,cl,date)+body+letterFooter();
+}
+
+/* ============== STORAGE (real browser persistence) ============== */
+/* IMPORTANT: window.storage only exists inside Claude's own preview pane —
+   it does NOT exist when this file is opened directly as a downloaded file
+   on your phone. That was the cause of "it forgets everything." Fixed by
+   using localStorage, which is a real, permanent part of your phone's
+   browser and survives closing the app/tab/browser. It's cleared only if
+   you clear that browser's site data — which is exactly why Settings has
+   an Export Backup button; use it. */
+const LS_PREFIX = 'tmihub_v1_';
+function loadDB(){
+  for(const k of KEYS){
+    try{
+      const raw = localStorage.getItem(LS_PREFIX+k);
+      DB[k] = raw ? JSON.parse(raw) : (k==='settings' ? DB.settings : []);
+    }catch(e){ DB[k] = (k==='settings') ? DB.settings : []; }
+  }
+  ensureManual();
+  route();
+}
+function saveKey(k){
+  try{ localStorage.setItem(LS_PREFIX+k, JSON.stringify(DB[k])); }
+  catch(e){ toast('Save failed — device storage may be full'); }
+}
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+/* ============== FILE STORAGE (IndexedDB) ==============
+   Real documents (PDFs, photos of ID/estate papers, scans) are stored on
+   this device using IndexedDB — the browser's own file-capable database.
+   No cloud, no account, no cost. They stay on THIS phone/browser only,
+   which is why each document also has an optional external link field for
+   anything you'd rather keep in your own Drive/Dropbox as well. */
+let _idb = null;
+function openIDB(){
+  if(_idb) return Promise.resolve(_idb);
+  return new Promise((resolve,reject)=>{
+    const req = indexedDB.open('tmihub_files_v1', 1);
+    req.onupgradeneeded = (e)=>{ const db=e.target.result; if(!db.objectStoreNames.contains('files')) db.createObjectStore('files',{keyPath:'id'}); };
+    req.onsuccess = (e)=>{ _idb=e.target.result; resolve(_idb); };
+    req.onerror = (e)=> reject(e.target.error);
+  });
+}
+function idbPut(record){ return openIDB().then(db=>new Promise((res,rej)=>{ const tx=db.transaction('files','readwrite'); tx.objectStore('files').put(record); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
+function idbGet(id){ return openIDB().then(db=>new Promise((res,rej)=>{ const tx=db.transaction('files','readonly'); const rq=tx.objectStore('files').get(id); rq.onsuccess=()=>res(rq.result); rq.onerror=()=>rej(rq.error); })); }
+function idbDelete(id){ return openIDB().then(db=>new Promise((res,rej)=>{ const tx=db.transaction('files','readwrite'); tx.objectStore('files').delete(id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
+
+/* ============== UTIL ============== */
+function uid(p){ return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtDate(d){ if(!d) return '—'; const dt=new Date(d+'T00:00:00'); if(isNaN(dt)) return d; return dt.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'}); }
+function statusMeta(list,code){ const f=list.find(x=>x[0]===code); return f?{label:f[1],color:f[2]}:{label:code,color:'grey'}; }
+function isOverdue(due,status){ return due && due<todayStr() && !['COMPLETED','CANCELLED','CLOSED'].includes(status); }
+function nextCaseNumber(){
+  const y = new Date().getFullYear();
+  if(DB.settings.seqYear !== y){ DB.settings.seqYear = y; DB.settings.nextSeq = 1; }
+  const n = DB.settings.nextSeq; DB.settings.nextSeq = n+1;
+  saveKey('settings');
+  return 'TMI-'+y+'-'+String(n).padStart(4,'0');
+}
+function clientById(id){ return DB.clients.find(c=>c.id===id); }
+function caseById(id){ return DB.cases.find(c=>c.id===id); }
+function tasksForCase(id){ return DB.tasks.filter(t=>t.caseId===id).sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999')); }
+function commsForCase(id){ return DB.communications.filter(c=>c.caseId===id).sort((a,b)=>b.date.localeCompare(a.date)); }
+function docsForCase(id){ return DB.documents.filter(d=>d.caseId===id); }
+function casesForClient(id){ return DB.cases.filter(c=>c.clientId===id); }
+
+/* ============== ROUTER ============== */
+window.addEventListener('hashchange', route);
+function route(){
+  const full = location.hash.replace('#/','') || 'dashboard';
+  const [pathPart, queryPart] = full.split('?');
+  const [base, id] = pathPart.split('/');
+  const params = new URLSearchParams(queryPart||'');
+  document.querySelectorAll('.bottomnav button').forEach(b=>b.classList.toggle('active', b.dataset.r===base));
+  const app = document.getElementById('app');
+  const fab = document.getElementById('fab');
+  fab.style.display='none';
+  try{
+    if(base==='dashboard') app.innerHTML = viewDashboard();
+    else if(base==='enquiries') { app.innerHTML = viewEnquiries(params); fab.style.display='block'; fab.dataset.mode='enquiry'; }
+    else if(base==='enquiry' && id) app.innerHTML = viewEnquiryDetail(id);
+    else if(base==='clients') { app.innerHTML = viewClients(); fab.style.display='block'; fab.dataset.mode='client'; }
+    else if(base==='client' && id) app.innerHTML = viewClientDetail(id);
+    else if(base==='cases') { app.innerHTML = viewCases(params); fab.style.display='block'; fab.dataset.mode='case'; }
+    else if(base==='case' && id) app.innerHTML = viewCaseDetail(id);
+    else if(base==='draft' && id) app.innerHTML = viewDraftEditor(id);
+    else if(base==='tasks') { app.innerHTML = viewTasks(params); fab.style.display='block'; fab.dataset.mode='task'; }
+    else if(base==='documents') { app.innerHTML = viewDocuments(); fab.style.display='block'; fab.dataset.mode='document'; }
+    else if(base==='communications') { app.innerHTML = viewComms(); fab.style.display='block'; fab.dataset.mode='communication'; }
+    else if(base==='search') app.innerHTML = viewSearch();
+    else if(base==='manual') app.innerHTML = viewManual();
+    else if(base==='manualitem' && id) app.innerHTML = viewManualItem(id);
+    else if(base==='casereport' && id) app.innerHTML = viewCaseReport(id);
+    else if(base==='settings') app.innerHTML = viewSettings();
+    else app.innerHTML = viewDashboard();
+  }catch(e){ app.innerHTML = '<div class="container empty">Something went wrong rendering this screen.<br><span class="small">'+esc(e.message)+'</span></div>'; }
+  window.scrollTo(0,0);
+}
+function fabAction(){
+  const mode = document.getElementById('fab').dataset.mode;
+  if(mode==='enquiry') openEnquiryForm();
+  else if(mode==='client') openClientForm();
+  else if(mode==='case') openCaseForm();
+  else if(mode==='task') openTaskForm();
+  else if(mode==='document') openDocumentForm();
+  else if(mode==='communication') openCommForm();
+}
+
+/* ============== DRAWER / MODAL ============== */
+function openDrawer(){ document.getElementById('drawer').classList.add('open'); document.getElementById('drawerOverlay').classList.add('open'); }
+function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); }
+function openModal(html){ document.getElementById('modalBody').innerHTML = html; document.getElementById('modalOverlay').classList.add('open'); }
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); document.getElementById('modalBody').innerHTML=''; }
+function optionsHtml(arr, selected){
+  return arr.map(v=>{
+    const val = Array.isArray(v)?v[0]:v, lbl = Array.isArray(v)?v[1]:v;
+    return `<option value="${esc(val)}" ${val===selected?'selected':''}>${esc(lbl)}</option>`;
+  }).join('');
+}
+
+/* ============== DASHBOARD ============== */
+function viewDashboard(){
+  const openCases = DB.cases.filter(c=>c.status!=='CLOSED');
+  const active = openCases.filter(c=>c.status==='ACTIVE').length;
+  const awaitingClient = openCases.filter(c=>c.status==='AWAITING_CLIENT').length;
+  const awaitingThird = openCases.filter(c=>c.status==='AWAITING_THIRD_PARTY').length;
+  const newEnq = DB.enquiries.filter(e=>['NEW','CONTACTED','INFORMATION_GATHERING','ASSESSMENT_REQUIRED','ASSESSMENT_BOOKED'].includes(e.status)).length;
+  const overdueTasks = DB.tasks.filter(t=>isOverdue(t.due,t.status));
+  const dueTodayTasks = DB.tasks.filter(t=>t.due===todayStr() && !['COMPLETED','CANCELLED'].includes(t.status));
+
+  const nextActions = openCases
+    .filter(c=>c.nextActionDue)
+    .sort((a,b)=>(a.nextActionDue||'9999').localeCompare(b.nextActionDue||'9999'))
+    .slice(0,8);
+
+  return `<div class="container">
+    <div class="stat-grid">
+      <a class="stat-card" href="#/cases"><div class="num">${DB.cases.length}</div><div class="lbl">Total Cases</div></a>
+      <a class="stat-card" href="#/clients"><div class="num">${DB.clients.length}</div><div class="lbl">Total Clients</div></a>
+      <a class="stat-card" href="#/cases?status=OPEN"><div class="num">${openCases.length}</div><div class="lbl">Open Cases</div></a>
+      <a class="stat-card" href="#/enquiries?filter=open"><div class="num">${newEnq}</div><div class="lbl">New Enquiries</div></a>
+      <a class="stat-card" href="#/cases?status=ACTIVE"><div class="num">${active}</div><div class="lbl">Active Casework</div></a>
+      <a class="stat-card" href="#/cases?status=AWAITING"><div class="num">${awaitingClient+awaitingThird}</div><div class="lbl">Awaiting Response</div></a>
+      <a class="stat-card alert" href="#/tasks?overdue=1"><div class="num">${overdueTasks.length}</div><div class="lbl">Overdue Tasks</div></a>
+      <a class="stat-card" href="#/documents"><div class="num">${DB.documents.length}</div><div class="lbl">Documents Stored</div></a>
+    </div>
+    <p class="small" style="margin:-8px 0 14px;color:var(--grey)">A brand-new case shows here under <b>Total Cases</b> immediately, even before it has a status of "Active" — that only counts cases you've actually moved to Active Casework.</p>
+
+    <div class="section-title"><h3>Cases Needing Attention</h3></div>
+    ${nextActions.length? nextActions.map(c=>caseCardHtml(c)).join('') : '<div class="empty">No open next actions yet — add one from a case.</div>'}
+
+    <hr>
+    <div class="section-title"><h3>Due Today (${dueTodayTasks.length})</h3></div>
+    ${dueTodayTasks.length? dueTodayTasks.map(t=>taskCardHtml(t)).join('') : '<div class="empty">Nothing due today.</div>'}
+
+    <hr>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn btn-gold" href="#" onclick="openEnquiryForm();return false;">+ New Enquiry</a>
+      <a class="btn btn-outline" href="#/cases">View All Cases</a>
+    </div>
+  </div>`;
+}
+
+/* ============== CASE CARD / helpers for rendering ============== */
+function caseCardHtml(c){
+  const st = statusMeta(CASE_STATUSES, c.status);
+  const cl = clientById(c.clientId);
+  const overdue = c.nextActionDue && c.nextActionDue < todayStr();
+  return `<a class="card" style="display:block;text-decoration:none;color:inherit" href="#/case/${c.id}">
+    <div class="card-row">
+      <div><div class="case-num">${esc(c.id)}</div><div class="case-sub">${esc(c.title||c.category||'')} ${cl?'· '+esc(cl.name):''}</div></div>
+      <span class="pill pill-${st.color}">${esc(st.label)}</span>
+    </div>
+    ${c.nextAction? `<div class="next-action"><b>Next:</b> ${esc(c.nextAction)} ${c.nextActionDue? '&mdash; <span class="'+(overdue?'overdue-text':'')+'">'+fmtDate(c.nextActionDue)+(overdue?' (overdue)':'')+'</span>':''}</div>`:''}
+  </a>`;
+}
+function taskCardHtml(t){
+  const c = caseById(t.caseId);
+  const overdue = isOverdue(t.due,t.status);
+  return `<a class="card" style="display:block;text-decoration:none;color:inherit" href="#/case/${t.caseId}">
+    <div class="card-row">
+      <div><b>${esc(t.description)}</b><div class="case-sub">${c?esc(c.id):''} ${c?'· '+esc(c.title||''):''}</div></div>
+      <span class="pill ${overdue?'pill-red':'pill-navy'}">${overdue?'Overdue':fmtDate(t.due)}</span>
+    </div>
+  </a>`;
+}
+
+/* ============== ENQUIRIES ============== */
+function viewEnquiries(params){
+  params = params || new URLSearchParams();
+  let list = [...DB.enquiries];
+  let filterLabel = '';
+  if(params.get('filter')==='open'){ list = list.filter(e=>!['PROCEEDING','NOT_PROCEEDING'].includes(e.status)); filterLabel='Open'; }
+  list.sort((a,b)=>b.dateReceived.localeCompare(a.dateReceived));
+  return `<div class="container">
+    <div class="section-title"><h2>Enquiries</h2><span class="small">${list.length}${filterLabel?' — '+esc(filterLabel):''}</span></div>
+    ${filterLabel?`<p class="small"><a href="#/enquiries">Clear filter</a></p>`:''}
+    ${list.length? list.map(e=>{
+      const st = statusMeta(ENQUIRY_STATUSES,e.status);
+      return `<a class="card" style="display:block;text-decoration:none;color:inherit" href="#/enquiry/${e.id}">
+        <div class="card-row">
+          <div><b>${esc(e.name)}</b><div class="case-sub">${esc(e.category||'')} · ${fmtDate(e.dateReceived)}</div></div>
+          <span class="pill pill-${st.color}">${esc(st.label)}</span>
+        </div>
+      </a>`;
+    }).join('') : '<div class="empty">No enquiries match this view.</div>'}
+  </div>`;
+}
+function openEnquiryForm(){
+  openModal(`<button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2>New Enquiry</h2>
+    <form id="enqForm" onsubmit="return submitEnquiry(event)">
+      <label>Full Name *</label><input name="name" required>
+      <label>Phone / WhatsApp</label><input name="phone">
+      <label>Email</label><input name="email">
+      <label>Preferred Contact</label><select name="preferredContact"><option>WhatsApp</option><option>Email</option><option>Phone</option></select>
+      <label>Category</label><select name="category">${optionsHtml(CATEGORIES)}</select>
+      <label>What do they need help with? (description)</label><textarea name="description" rows="3"></textarea>
+      <label>Institution / other party involved</label><input name="institution">
+      <label>Deadline (if any)</label><input type="date" name="deadline">
+      <label>Documents available?</label><input name="documentsAvailable" placeholder="e.g. ID, death certificate">
+      <label>How did they find TMI?</label><input name="source" placeholder="Website / WhatsApp / Referral">
+      <button class="btn btn-primary btn-block" type="submit">Save Enquiry</button>
+    </form>`);
+}
+function submitEnquiry(ev){
+  ev.preventDefault();
+  const f = new FormData(ev.target);
+  const e = {
+    id: uid('ENQ'), dateReceived: todayStr(), status:'NEW',
+    name:f.get('name'), phone:f.get('phone'), email:f.get('email'), preferredContact:f.get('preferredContact'),
+    category:f.get('category'), description:f.get('description'), institution:f.get('institution'),
+    deadline:f.get('deadline'), documentsAvailable:f.get('documentsAvailable'), source:f.get('source'),
+    clientId:null, convertedCaseId:null
+  };
+  DB.enquiries.push(e); saveKey('enquiries'); closeModal(); toast('Enquiry saved'); location.hash='#/enquiry/'+e.id;
+}
+function viewEnquiryDetail(id){
+  const e = DB.enquiries.find(x=>x.id===id);
+  if(!e) return '<div class="container empty">Enquiry not found.</div>';
+  const st = statusMeta(ENQUIRY_STATUSES,e.status);
+  return `<div class="container">
+    <a href="#/enquiries" class="small">&larr; Enquiries</a>
+    <div class="section-title" style="margin-top:6px"><h2>${esc(e.name)}</h2><span class="pill pill-${st.color}">${esc(st.label)}</span></div>
+    <div class="field-view"><span class="fk">Received</span><span class="fv">${fmtDate(e.dateReceived)}</span></div>
+    <div class="field-view"><span class="fk">Contact</span><span class="fv">${esc(e.phone||'—')} ${e.email?'· '+esc(e.email):''} (prefers ${esc(e.preferredContact||'—')})</span></div>
+    <div class="field-view"><span class="fk">Category</span><span class="fv">${esc(e.category||'—')}</span></div>
+    <div class="field-view"><span class="fk">Description</span><span class="fv">${esc(e.description||'—')}</span></div>
+    <div class="field-view"><span class="fk">Institution / party</span><span class="fv">${esc(e.institution||'—')}</span></div>
+    <div class="field-view"><span class="fk">Deadline</span><span class="fv">${e.deadline?fmtDate(e.deadline):'—'}</span></div>
+    <div class="field-view"><span class="fk">Documents available</span><span class="fv">${esc(e.documentsAvailable||'—')}</span></div>
+    <div class="field-view"><span class="fk">Source</span><span class="fv">${esc(e.source||'—')}</span></div>
+    <hr>
+    <label>Update Status</label>
+    <select onchange="updateEnquiryStatus('${e.id}',this.value)">${optionsHtml(ENQUIRY_STATUSES,e.status)}</select>
+    ${e.convertedCaseId? `<p class="small">Converted to case <a href="#/case/${e.convertedCaseId}">${esc(e.convertedCaseId)}</a></p>` :
+      `<button class="btn btn-gold btn-block" onclick="convertEnquiryToCase('${e.id}')">Convert to Case →</button>`}
+    <hr>
+    <button class="btn btn-danger btn-sm" onclick="deleteEnquiry('${e.id}')">Delete Enquiry</button>
+  </div>`;
+}
+function updateEnquiryStatus(id,status){ const e=DB.enquiries.find(x=>x.id===id); e.status=status; saveKey('enquiries'); route(); toast('Status updated'); }
+function convertEnquiryToCase(id){
+  const e = DB.enquiries.find(x=>x.id===id);
+  openModal(`<button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2>Convert to Case</h2>
+    <p class="small">This will create (or link) a client record and open a new matter from this enquiry.</p>
+    <form onsubmit="return doConvert(event,'${id}')">
+      <label>Client — link to existing or create new</label>
+      <select name="clientId"><option value="">— Create new client —</option>${DB.clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select>
+      <label>Case Title</label><input name="title" value="${esc(e.category||'')} matter" required>
+      <label>Category</label><select name="category">${optionsHtml(CATEGORIES,e.category)}</select>
+      <button class="btn btn-primary btn-block" type="submit">Create Case</button>
+    </form>`);
+}
+function doConvert(ev,enqId){
+  ev.preventDefault();
+  const f = new FormData(ev.target);
+  const e = DB.enquiries.find(x=>x.id===enqId);
+  let clientId = f.get('clientId');
+  if(!clientId){
+    const c = {id:uid('CL'), name:e.name, clientType:'Individual', phone:e.phone, whatsapp:e.phone, email:e.email,
+      preferredContact:e.preferredContact, address:'', source:e.source||'Website', dateCreated:todayStr(), status:'Active', notes:''};
+    DB.clients.push(c); clientId=c.id; saveKey('clients');
+  }
+  const num = nextCaseNumber();
+  const cs = {
+    id:num, clientId, enquiryId:enqId, category:f.get('category'), workType:'', title:f.get('title'),
+    description:e.description, dateOpened:todayStr(), priority:'NORMAL', status:'INTAKE',
+    nextAction:'Complete intake and confirm scope', nextActionDue:'', referralRequired:false, referralStatus:'',
+    feeArrangement:'', dateClosed:'',
+    assessment:{issue:'',facts:e.description||'',missingInfo:'',parties:e.institution||'',institution:e.institution||'',researchNotes:'',routes:'',recommendedNext:'',scope:'',limitations:'',referralRequired:'No',outcome:''},
+    work:{objective:'',currentPosition:'',issues:'',workItems:[],workLog:[]},
+    closure:{outcome:'',workCompleted:'',documentsDelivered:false,outstanding:'',referralMade:false,clientNotified:false,finalInvoice:false,closureDate:''}
+  };
+  DB.cases.push(cs); saveKey('cases');
+  if(driveIsConnected()) driveCreateCaseFolder(cs.id).catch(()=>{});
+  e.status='PROCEEDING'; e.clientId=clientId; e.convertedCaseId=num; saveKey('enquiries');
+  DB.communications.push({id:uid('COM'),caseId:num,clientId,date:todayStr(),channel:'Website',direction:'Inbound',party:e.name,subject:'Enquiry received',summary:e.description||'Initial enquiry.',followUpDate:''});
+  saveKey('communications');
+  closeModal(); toast('Case '+num+' created'); location.hash='#/case/'+num;
+}
+
+/* ============== CLIENTS ============== */
+function viewClients(){
+  const list = [...DB.clients].sort((a,b)=>a.name.localeCompare(b.name));
+  return `<div class="container">
+    <div class="section-title"><h2>Clients</h2><span class="small">${list.length} total</span></div>
+    ${list.length? list.map(c=>{
+      const n = casesForClient(c.id).length;
+      return `<a class="card" style="display:block;text-decoration:none;color:inherit" href="#/client/${c.id}">
+        <div class="card-row"><div><b>${esc(c.name)}</b><div class="case-sub">${esc(c.phone||c.email||'')}</div></div>
+        <span class="pill pill-navy">${n} matter${n===1?'':'s'}</span></div>
+      </a>`;
+    }).join('') : '<div class="empty">No clients yet.</div>'}
+  </div>`;
+}
+function openClientForm(){
+  openModal(`<button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2>New Client</h2>
+    <form onsubmit="return submitClient(event)">
+      <label>Full Name / Business Name *</label><input name="name" required>
+      <label>Client Type</label><select name="clientType"><option>Individual</option><option>Business</option></select>
+      <label>Phone / WhatsApp</label><input name="phone">
+      <label>Email</label><input name="email">
+      <label>Preferred Contact</label><select name="preferredContact"><option>WhatsApp</option><option>Email</option><option>Phone</option></select>
+      <label>Address</label><textarea name="address" rows="2"></textarea>
+      <label>Source</label><input name="source" placeholder="Website / Referral / WhatsApp">
+      <button class="btn btn-primary btn-block" type="submit">Save Client</button>
+    </form>`);
+}
+function submitClient(ev){
+  ev.preventDefault(); const f=new FormData(ev.target);
+  const c = {id:uid('CL'),name:f.get('name'),clientType:f.get('clientType'),phone:f.get('phone'),whatsapp:f.get('phone'),
+    email:f.get('email'),preferredContact:f.get('preferredContact'),address:f.get('address'),source:f.get('source'),
+    dateCreated:todayStr(),status:'Active',notes:''};
+  DB.clients.push(c); saveKey('clients'); closeModal(); toast('Client saved'); location.hash='#/client/'+c.id;
+}
+function viewClientDetail(id){
+  const c = clientById(id);
+  if(!c) return '<div class="container empty">Client not found.</div>';
+  const cases = casesForClient(id);
+  return `<div class="container">
+    <a href="#/clients" class="small">&larr; Clients</a>
+    <div class="section-title" style="margin-top:6px"><h2>${esc(c.name)}</h2></div>
+    <div class="field-view"><span class="fk">Contact</span><span class="fv">${esc(c.phone||'—')} ${c.email?'· '+esc(c.email):''}</span></div>
+    <div class="field-view"><span class="fk">Type</span><span class="fv">${esc(c.clientType||'—')}</span></div>
+    <div class="field-view"><span class="fk">Address</span><span class="fv">${esc(c.address||'—')}</span></div>
+    <div class="field-view"><span class="fk">Client since</span><span class="fv">${fmtDate(c.dateCreated)}</span></div>
+    <hr>
+    <div class="section-title"><h3>Matters (${cases.length})</h3>
+      <button class="btn btn-gold btn-sm" onclick="openCaseForm('${c.id}')">+ New Case</button>
+    </div>
+    ${cases.length? cases.map(caseCardHtml).join('') : '<div class="empty">No matters yet for this client.</div>'}
+    <hr>
+    <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')">Delete Client</button>
+  </div>`;
+}
+
+/* ============== CASES ============== */
+function viewCases(params){
+  params = params || new URLSearchParams();
+  let list = [...DB.cases];
+  const statusFilter = params.get('status');
+  let filterLabel = '';
+  if(statusFilter==='ACTIVE'){ list = list.filter(c=>c.status==='ACTIVE'); filterLabel='Active Casework'; }
+  else if(statusFilter==='AWAITING'){ list = list.filter(c=>c.status==='AWAITING_CLIENT'||c.status==='AWAITING_THIRD_PARTY'); filterLabel='Awaiting a Response'; }
+  else if(statusFilter==='OPEN'){ list = list.filter(c=>c.status!=='CLOSED'); filterLabel='Open (not yet closed)'; }
+  list.sort((a,b)=> (a.status==='CLOSED')-(b.status==='CLOSED') || (a.nextActionDue||'9999').localeCompare(b.nextActionDue||'9999'));
+  return `<div class="container">
+    <div class="section-title"><h2>Cases</h2><span class="small">${list.length}${filterLabel?' — '+esc(filterLabel):''}</span></div>
+    ${filterLabel?`<p class="small"><a href="#/cases">Clear filter</a></p>`:''}
+    ${list.length? list.map(caseCardHtml).join('') : '<div class="empty">No cases match this view.</div>'}
+  </div>`;
+}
+function openCaseForm(prefClientId){
+  openModal(`<button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2>New Case</h2>
+    <form onsubmit="return submitCase(event)">
+      <label>Client *</label>
+      <select name="clientId" onchange="document.getElementById('inlineNewClientFields').style.display=(this.value==='__new__'?'block':'none')" required>
+        <option value="">— select —</option>
+        <option value="__new__">+ Create new client</option>
+        ${DB.clients.map(c=>`<option value="${c.id}" ${c.id===prefClientId?'selected':''}>${esc(c.name)}</option>`).join('')}
+      </select>
+      <div id="inlineNewClientFields" style="display:none;background:var(--cream);padding:10px;border-radius:8px;margin-top:8px">
+        <label>New Client Name *</label><input name="newClientName" placeholder="Full name / business name">
+        <label>Phone / WhatsApp</label><input name="newClientPhone">
+        <label>Email</label><input name="newClientEmail">
+      </div>
+      <label>Case Title</label><input name="title" required placeholder="e.g. Mokoena Estate">
+      <label>Category</label><select name="category">${optionsHtml(CATEGORIES)}</select>
+      <label>Description</label><textarea name="description" rows="3"></textarea>
+      <button class="btn btn-primary btn-block" type="submit">Create Case</button>
+    </form>`);
+}
+function submitCase(ev){
+  ev.preventDefault(); const f=new FormData(ev.target);
+  let clientId = f.get('clientId');
+  if(clientId==='__new__'){
+    const name = (f.get('newClientName')||'').trim();
+    if(!name){ toast('Enter a name for the new client'); return false; }
+    const nc = {id:uid('CL'),name,clientType:'Individual',phone:f.get('newClientPhone')||'',whatsapp:f.get('newClientPhone')||'',
+      email:f.get('newClientEmail')||'',preferredContact:'WhatsApp',address:'',source:'',dateCreated:todayStr(),status:'Active',notes:''};
+    DB.clients.push(nc); saveKey('clients'); clientId = nc.id;
+  }
+  const num = nextCaseNumber();
+  const cs = {id:num,clientId,enquiryId:null,category:f.get('category'),workType:'',title:f.get('title'),
+    description:f.get('description'),dateOpened:todayStr(),priority:'NORMAL',status:'NEW',
+    nextAction:'',nextActionDue:'',referralRequired:false,referralStatus:'',feeArrangement:'',dateClosed:'',
+    assessment:{issue:'',facts:'',missingInfo:'',parties:'',institution:'',researchNotes:'',routes:'',recommendedNext:'',scope:'',limitations:'',referralRequired:'No',outcome:''},
+    work:{objective:'',currentPosition:'',issues:'',workItems:[],workLog:[]},
+    closure:{outcome:'',workCompleted:'',documentsDelivered:false,outstanding:'',referralMade:false,clientNotified:false,finalInvoice:false,closureDate:''}};
+  DB.cases.push(cs); saveKey('cases');
+  if(driveIsConnected()) driveCreateCaseFolder(cs.id).catch(()=>{});
+  closeModal(); toast('Case '+num+' created'); location.hash='#/case/'+num;
+}
+
+function viewCaseDetail(id, tab){
+  const c = caseById(id);
+  if(!c) return '<div class="container empty">Case not found.</div>';
+  if(!c.work) c.work = {objective:'',currentPosition:'',issues:'',workItems:[],workLog:[]};
+  if(c.workType===undefined) c.workType='';
+  tab = tab || (window.__caseTab && window.__caseTab[id]) || 'overview';
+  const cl = clientById(c.clientId);
+  const st = statusMeta(CASE_STATUSES,c.status);
+  const tabs = ['overview','assessment','work','tasks','documents','drafts','communications','closure'];
+  const overdue = c.nextActionDue && c.nextActionDue < todayStr() && c.status!=='CLOSED';
+
+  let body='';
+  if(tab==='overview'){
+    const workTypeOptions = WORK_TYPES[c.category] || [];
+    body = `
+      <div class="field-view"><span class="fk">Client</span><span class="fv"><a href="#/client/${cl?cl.id:''}">${esc(cl?cl.name:'—')}</a></span></div>
+      <div class="field-view"><span class="fk">Date Opened</span><span class="fv">${fmtDate(c.dateOpened)}</span></div>
+      <div class="field-view"><span class="fk">Description</span><span class="fv">${esc(c.description||'—')}</span></div>
+      <hr>
+      <label>Service Category</label>
+      <select onchange="updateCaseCategory('${id}',this.value)">${optionsHtml(CATEGORIES,c.category)}</select>
+      <label>Work Type</label>
+      <select onchange="updateCaseField('${id}','workType',this.value)">
+        <option value="">— select —</option>
+        ${workTypeOptions.map(w=>`<option value="${esc(w)}" ${w===c.workType?'selected':''}>${esc(w)}</option>`).join('')}
+      </select>
+      ${c.workType?`<p class="small">Open the <b>Work</b> tab to load a standard checklist for "${esc(c.workType)}".</p>`:''}
+      <hr>
+      <label>Status</label>
+      <select onchange="updateCaseField('${id}','status',this.value)">${optionsHtml(CASE_STATUSES,c.status)}</select>
+      <label>Priority</label>
+      <select onchange="updateCaseField('${id}','priority',this.value)">${optionsHtml(PRIORITIES,c.priority)}</select>
+      <label>Next Action</label>
+      <input value="${esc(c.nextAction)}" onchange="updateCaseField('${id}','nextAction',this.value)" placeholder="e.g. Follow up with executor">
+      <label>Next Action Due</label>
+      <input type="date" value="${c.nextActionDue||''}" onchange="updateCaseField('${id}','nextActionDue',this.value)">
+      ${overdue?'<p class="overdue-text small">This next action is overdue.</p>':''}
+      <label>Fee Arrangement</label>
+      <input value="${esc(c.feeArrangement)}" onchange="updateCaseField('${id}','feeArrangement',this.value)" placeholder="e.g. R650 assessment, agreed">
+      <hr>
+      <div class="section-title"><h3>Timeline</h3></div>
+      ${timelineHtml(c)}
+    `;
+  } else if(tab==='assessment'){
+    const a = c.assessment;
+    body = `<form onsubmit="return saveAssessment(event,'${id}')">
+      <label>What is the issue?</label><textarea name="issue" rows="2">${esc(a.issue)}</textarea>
+      <label>Facts established</label><textarea name="facts" rows="2">${esc(a.facts)}</textarea>
+      <label>Missing information</label><textarea name="missingInfo" rows="2">${esc(a.missingInfo)}</textarea>
+      <label>Relevant parties</label><input name="parties" value="${esc(a.parties)}">
+      <label>Relevant institution</label><input name="institution" value="${esc(a.institution)}">
+      <label>Research notes</label><textarea name="researchNotes" rows="2">${esc(a.researchNotes)}</textarea>
+      <label>Possible routes</label><textarea name="routes" rows="2">${esc(a.routes)}</textarea>
+      <label>Recommended next step</label><textarea name="recommendedNext" rows="2">${esc(a.recommendedNext)}</textarea>
+      <label>Scope of TMI work</label><textarea name="scope" rows="2">${esc(a.scope)}</textarea>
+      <label>Limitations</label><textarea name="limitations" rows="2">${esc(a.limitations)}</textarea>
+      <label>Referral required?</label><select name="referralRequired"><option ${a.referralRequired==='No'?'selected':''}>No</option><option ${a.referralRequired==='Yes'?'selected':''}>Yes</option></select>
+      <label>Assessment outcome</label><select name="outcome">${optionsHtml(ASSESS_OUTCOMES,a.outcome)}</select>
+      <button class="btn btn-primary btn-block" type="submit">Save Assessment</button>
+    </form>`;
+  } else if(tab==='work'){
+    const w = c.work;
+    const doneCount = w.workItems.filter(i=>i.done).length;
+    body = `
+      <label>Current Objective</label>
+      <textarea rows="2" onchange="updateCaseWorkField('${id}','objective',this.value)" placeholder="What are we trying to achieve?">${esc(w.objective)}</textarea>
+      <label>Current Position</label>
+      <textarea rows="2" onchange="updateCaseWorkField('${id}','currentPosition',this.value)" placeholder="Where does the matter stand right now?">${esc(w.currentPosition)}</textarea>
+      <label>Key Issues</label>
+      <textarea rows="2" onchange="updateCaseWorkField('${id}','issues',this.value)" placeholder="What problems have been identified?">${esc(w.issues)}</textarea>
+      <hr>
+      <div class="section-title"><h3>Work Items (${doneCount}/${w.workItems.length})</h3></div>
+      ${c.workType && CHECKLIST_TEMPLATES[c.workType] ? `<button class="btn btn-outline btn-sm" onclick="loadChecklistTemplate('${id}')">Load standard checklist for "${esc(c.workType)}"</button><div style="height:8px"></div>` : ''}
+      ${w.workItems.length? w.workItems.map(it=>`
+        <div class="card" style="padding:10px 12px">
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <input type="checkbox" style="width:auto;margin-top:3px" ${it.done?'checked':''} onchange="toggleWorkItem('${id}','${it.id}')">
+            <span style="flex:1;${it.done?'text-decoration:line-through;color:#999':''}">${esc(it.text)}</span>
+            <button class="btn btn-danger btn-sm" onclick="deleteWorkItem('${id}','${it.id}')">✕</button>
+          </div>
+        </div>`).join('') : '<div class="empty">No work items yet.</div>'}
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <input id="newWorkItem" placeholder="Add a work item…" style="flex:1">
+        <button class="btn btn-gold btn-sm" onclick="addWorkItem('${id}',document.getElementById('newWorkItem').value); document.getElementById('newWorkItem').value=''">Add</button>
+      </div>
+      <hr>
+      <div class="section-title"><h3>Work Log</h3></div>
+      <p class="small">A running note of what you actually did — separate from formal communications.</p>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input id="newWorkLog" placeholder="e.g. Reviewed L&D account, found discrepancy" style="flex:1">
+        <button class="btn btn-gold btn-sm" onclick="addWorkLog('${id}',document.getElementById('newWorkLog').value); document.getElementById('newWorkLog').value=''">Add</button>
+      </div>
+      ${w.workLog.length? [...w.workLog].reverse().map((l)=>{
+        const realIdx = w.workLog.indexOf(l);
+        return `<div class="timeline-item"><div class="timeline-date">${new Date(l.date).toLocaleString('en-ZA',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
+          <button class="btn btn-danger btn-sm" style="padding:2px 8px;margin-left:8px" onclick="deleteWorkLog('${id}',${realIdx})">✕</button></div>${esc(l.text)}</div>`;
+      }).join('') : '<div class="empty">No entries yet.</div>'}
+    `;
+  } else if(tab==='tasks'){
+    const ts = tasksForCase(id);
+    body = `<button class="btn btn-gold btn-sm" onclick="openTaskForm('${id}')">+ New Task</button><div style="height:10px"></div>
+      ${ts.length? ts.map(t=>{
+        const ov = isOverdue(t.due,t.status);
+        return `<div class="card">
+          <div class="card-row"><b>${esc(t.description)}</b><span class="pill ${ov?'pill-red':'pill-grey'}">${esc(TASK_STATUSES.find(x=>x[0]===t.status)?.[1]||t.status)}</span></div>
+          <div class="case-sub">Due ${t.due?fmtDate(t.due):'—'} ${ov?' (overdue)':''} · Priority ${esc(t.priority)}</div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <select onchange="updateTaskStatus('${t.id}',this.value)">${optionsHtml(TASK_STATUSES,t.status)}</select>
+            <button class="btn btn-danger btn-sm" onclick="deleteTaskRecord('${t.id}')">Delete</button>
+          </div>
+        </div>`;
+      }).join('') : '<div class="empty">No tasks yet.</div>'}`;
+  } else if(tab==='documents'){
+    const ds = docsForCase(id);
+    body = `${driveCaseFolderBannerHtml(c)}
+      <button class="btn btn-gold btn-sm" onclick="openDocumentForm('${id}')">+ Add Document</button><div style="height:10px"></div>
+      ${ds.length? ds.map(d=>`<div class="card">
+          <div class="card-row"><b>${esc(d.name)}</b><span class="pill pill-navy">${esc(d.status)}</span></div>
+          <div class="case-sub">${esc(d.type)} · received ${d.dateReceived?fmtDate(d.dateReceived):'—'}</div>
+          ${d.fileId?`<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="openStoredFile('${d.fileId}')">Open</button><span class="small">${esc(d.fileName||'')} ${d.fileSize?'('+Math.round(d.fileSize/1024)+' KB)':''}</span></div>`:''}
+          ${driveDocButtonHtml(c,d)}
+          ${d.link?`<div class="linkline small"><a href="${esc(d.link)}" target="_blank" rel="noopener">${esc(d.link)}</a></div>`:''}
+          ${d.notes?`<div class="small">${esc(d.notes)}</div>`:''}
+          <button class="btn btn-danger btn-sm" style="margin-top:8px" onclick="deleteDocument('${d.id}')">Delete</button>
+        </div>`).join('') : '<div class="empty">No documents yet. Upload a file from your phone, or log a link to where it is kept.</div>'}
+      <p class="small" style="margin-top:10px">Uploaded files are stored on this device (this browser) first. Connect Google Drive in Settings to also push copies to your client's Drive folder.</p>`;
+  } else if(tab==='drafts'){
+    const ds = DB.drafts.filter(x=>x.caseId===id).sort((a,b)=>(b.updated||b.created||'').localeCompare(a.updated||a.created||''));
+    body = `<p class="small">Type and save correspondence and work product directly here — letters, complaints, statements, chronologies, case notes, research notes, or a blank document to type freely. Not dependent on uploading anything. Keep editing over time, mark Final when done, then export to PDF or Word.</p>
+      <button class="btn btn-gold btn-sm" onclick="openDraftPicker('${id}')">+ New Document</button><div style="height:10px"></div>
+      ${ds.length? ds.map(d=>{
+        const t = TEMPLATES[d.templateKey];
+        return `<a class="card" style="display:block;text-decoration:none;color:inherit" href="#/draft/${d.id}">
+          <div class="card-row"><b>${esc(d.title||t.label)}</b><span class="pill ${d.status==='final'?'pill-green':'pill-grey'}">${d.status==='final'?'Final':'Draft'}</span></div>
+          <div class="case-sub">${esc(t.label)} · updated ${d.updated?fmtDate(d.updated):fmtDate(d.created)}</div>
+        </a>`;
+      }).join('') : '<div class="empty">No documents drafted yet for this case.</div>'}`;
+  } else if(tab==='communications'){
+    const cs = commsForCase(id);
+    body = `<button class="btn btn-gold btn-sm" onclick="openCommForm('${id}')">+ Log Communication</button><div style="height:10px"></div>
+      ${cs.length? cs.map(m=>`<div class="card">
+          <div class="card-row"><b>${esc(m.channel)} — ${esc(m.direction)}</b><span class="small">${fmtDate(m.date)}</span></div>
+          <div class="case-sub">${esc(m.party||'')} ${m.subject?'· '+esc(m.subject):''}</div>
+          <div class="small">${esc(m.summary)}</div>
+          ${m.followUpTaskId?`<div class="small" style="color:var(--amber)">⏰ Follow-up task due ${fmtDate(m.followUpDate)}</div>`:(m.followUpDate?`<div class="small">Follow-up: ${fmtDate(m.followUpDate)}</div>`:'')}
+          <button class="btn btn-danger btn-sm" style="margin-top:6px" onclick="deleteComm('${m.id}')">Delete</button>
+        </div>`).join('') : '<div class="empty">No communications logged yet.</div>'}`;
+  } else if(tab==='closure'){
+    const cz = c.closure;
+    body = `<form onsubmit="return saveClosure(event,'${id}')">
+      <label>Outcome</label><textarea name="outcome" rows="2">${esc(cz.outcome)}</textarea>
+      <label>Work completed</label><textarea name="workCompleted" rows="2">${esc(cz.workCompleted)}</textarea>
+      <label><input type="checkbox" name="documentsDelivered" ${cz.documentsDelivered?'checked':''} style="width:auto;display:inline-block;margin-right:6px"> Documents delivered</label>
+      <label>Outstanding matters</label><textarea name="outstanding" rows="2">${esc(cz.outstanding)}</textarea>
+      <label><input type="checkbox" name="referralMade" ${cz.referralMade?'checked':''} style="width:auto;display:inline-block;margin-right:6px"> Referral made</label>
+      <label><input type="checkbox" name="clientNotified" ${cz.clientNotified?'checked':''} style="width:auto;display:inline-block;margin-right:6px"> Client notified</label>
+      <label><input type="checkbox" name="finalInvoice" ${cz.finalInvoice?'checked':''} style="width:auto;display:inline-block;margin-right:6px"> Final invoice issued</label>
+      <label>Closure date</label><input type="date" name="closureDate" value="${cz.closureDate||''}">
+      <button class="btn btn-primary btn-block" type="submit">Save Closure</button>
+      <button type="button" class="btn btn-danger btn-block" onclick="closeCaseNow('${id}')">Mark Case CLOSED</button>
+    </form>`;
+  }
+
+  return `<div class="container">
+    <a href="#/cases" class="small">&larr; Cases</a>
+    <div class="section-title" style="margin-top:6px">
+      <div><div class="case-num" style="font-size:19px">${esc(c.id)}</div><div class="case-sub">${esc(c.title)}</div></div>
+      <span class="pill pill-${st.color}">${esc(st.label)}</span>
+    </div>
+    <div class="tabbar">
+      ${tabs.map(t=>`<button class="${t===tab?'active':''}" onclick="gotoCaseTab('${id}','${t}')">${t==='drafts'?'Correspondence':(t.charAt(0).toUpperCase()+t.slice(1))}</button>`).join('')}
+    </div>
+    ${body}
+    <hr>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn btn-outline btn-sm" href="#/casereport/${id}">Generate Full Case Report</a>
+      <a class="btn btn-outline btn-sm" href="#/manual">Operating Manual</a>
+      <button class="btn btn-danger btn-sm" onclick="deleteCase('${id}')">Delete Case</button>
+    </div>
+  </div>`;
+}
+function gotoCaseTab(id,tab){ window.__caseTab = window.__caseTab||{}; window.__caseTab[id]=tab; document.getElementById('app').innerHTML = viewCaseDetail(id,tab); window.scrollTo(0,0); }
+function updateCaseField(id,field,val){ const c=caseById(id); c[field]=val; saveKey('cases'); if(field==='status'){ document.getElementById('app').innerHTML=viewCaseDetail(id,'overview'); } toast('Saved'); }
+function updateCaseCategory(id,val){ const c=caseById(id); c.category=val; c.workType=''; saveKey('cases'); document.getElementById('app').innerHTML=viewCaseDetail(id,'overview'); toast('Saved'); }
+function updateCaseWorkField(id,field,val){ const c=caseById(id); c.work[field]=val; saveKey('cases'); toast('Saved'); }
+function loadChecklistTemplate(id){
+  const c = caseById(id); const items = CHECKLIST_TEMPLATES[c.workType];
+  if(!items){ toast('No standard checklist for this work type yet'); return; }
+  const existingText = new Set(c.work.workItems.map(i=>i.text));
+  items.forEach(t=>{ if(!existingText.has(t)) c.work.workItems.push({id:uid('WI'),text:t,done:false}); });
+  saveKey('cases'); gotoCaseTab(id,'work'); toast('Checklist loaded');
+}
+function addWorkItem(id,text){
+  if(!text||!text.trim()) return;
+  const c = caseById(id); c.work.workItems.push({id:uid('WI'),text:text.trim(),done:false});
+  saveKey('cases'); gotoCaseTab(id,'work');
+}
+function toggleWorkItem(id,itemId){
+  const c = caseById(id); const it = c.work.workItems.find(x=>x.id===itemId); it.done=!it.done;
+  saveKey('cases'); gotoCaseTab(id,'work');
+}
+function deleteWorkItem(id,itemId){
+  const c = caseById(id); c.work.workItems = c.work.workItems.filter(x=>x.id!==itemId);
+  saveKey('cases'); gotoCaseTab(id,'work');
+}
+function addWorkLog(id,text){
+  if(!text||!text.trim()) return;
+  const c = caseById(id); c.work.workLog.push({date:new Date().toISOString(),text:text.trim()});
+  saveKey('cases'); gotoCaseTab(id,'work');
+}
+function deleteWorkLog(id,idx){
+  const c = caseById(id); c.work.workLog.splice(idx,1);
+  saveKey('cases'); gotoCaseTab(id,'work');
+}
+function timelineHtml(c){
+  const events = [];
+  events.push({date:c.dateOpened, label:'Case opened'});
+  commsForCase(c.id).forEach(m=>events.push({date:m.date, label:m.channel+' ('+m.direction+'): '+(m.subject||m.summary.slice(0,40))}));
+  tasksForCase(c.id).filter(t=>t.status==='COMPLETED').forEach(t=>events.push({date:t.due||c.dateOpened, label:'Task completed: '+t.description}));
+  if(c.dateClosed) events.push({date:c.dateClosed, label:'Case closed'});
+  events.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  if(!events.length) return '<div class="empty">No events yet.</div>';
+  return events.map(e=>`<div class="timeline-item"><div class="timeline-date">${fmtDate(e.date)}</div>${esc(e.label)}</div>`).join('');
+}
+function saveAssessment(ev,id){
+  ev.preventDefault(); const f=new FormData(ev.target); const c=caseById(id);
+  c.assessment = {issue:f.get('issue'),facts:f.get('facts'),missingInfo:f.get('missingInfo'),parties:f.get('parties'),
+    institution:f.get('institution'),researchNotes:f.get('researchNotes'),routes:f.get('routes'),
+    recommendedNext:f.get('recommendedNext'),scope:f.get('scope'),limitations:f.get('limitations'),
+    referralRequired:f.get('referralRequired'),outcome:f.get('outcome')};
+  saveKey('cases'); toast('Assessment saved'); gotoCaseTab(id,'assessment');
+}
+function saveClosure(ev,id){
+  ev.preventDefault(); const f=new FormData(ev.target); const c=caseById(id);
+  c.closure = {outcome:f.get('outcome'),workCompleted:f.get('workCompleted'),documentsDelivered:!!f.get('documentsDelivered'),
+    outstanding:f.get('outstanding'),referralMade:!!f.get('referralMade'),clientNotified:!!f.get('clientNotified'),
+    finalInvoice:!!f.get('finalInvoice'),closureDate:f.get('closureDate')};
+  saveKey('cases'); toast('Closure saved'); gotoCaseTab(id,'closure');
+}
+function closeCaseNow(id){
+  const c=caseById(id); c.status='CLOSED'; c.dateClosed = c.closure.closureDate || todayStr(); saveKey('cases');
+  toast('Case closed'); location.hash='#/cases';
+}
+
+/* ============== DRAFT DOCUMENTS ============== */
+function openDraftPicker(caseId){
+  const opts = Object.entries(TEMPLATES).map(([k,t])=>`<option value="${k}">${esc(t.label)}</option>`).join('');
+  openModal(`<button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2>New Document</h2>
+    <form onsubmit="return createDraft(event,'${caseId}')">
+      <label>Template</label><select name="templateKey">${opts}</select>
+      <label>Document Title (optional)</label><input name="title" placeholder="Leave blank to use template name">
+      <button class="btn btn-primary btn-block" type="submit">Start Drafting</button>
+    </form>`);
+}
+function createDraft(ev,caseId){
+  ev.preventDefault(); const f=new FormData(ev.target);
+  const key = f.get('templateKey'); const t = TEMPLATES[key]; const c = caseById(caseId);
+  const values = {docDate: todayStr()};
+  t.fields.forEach(fld=>{ values[fld.name] = typeof fld.default==='function' ? (fld.default(c)||'') : (fld.default||''); });
+  const d = {id:uid('DRAFT'), caseId, templateKey:key, title:f.get('title')||t.label, values, status:'draft', created:todayStr(), updated:todayStr()};
+  DB.drafts.push(d); saveKey('drafts'); closeModal(); toast('Draft started'); location.hash='#/draft/'+d.id;
+}
+function viewDraftEditor(id){
+  const d = DB.drafts.find(x=>x.id===id);
+  if(!d) return '<div class="container empty">Document not found.</div>';
+  const c = caseById(d.caseId); const cl = clientById(c.clientId);
+  const t = TEMPLATES[d.templateKey];
+  const fieldsHtml = t.fields.map(f=>{
+    if(d.values[f.name]===undefined) d.values[f.name] = typeof f.default==='function'?(f.default(c)||''):(f.default||'');
+    const val = d.values[f.name];
+    return f.type==='textarea'
+      ? `<label>${esc(f.label)}</label><textarea rows="3" oninput="updateDraftField('${id}','${f.name}',this.value)">${esc(val)}</textarea>`
+      : `<label>${esc(f.label)}</label><input value="${esc(val)}" oninput="updateDraftField('${id}','${f.name}',this.value)">`;
+  }).join('');
+  return `<div class="container">
+    <a href="#/case/${c.id}" class="small">&larr; Back to ${esc(c.id)}</a>
+    <div class="section-title" style="margin-top:6px"><h2>${esc(t.label)}</h2><span class="pill ${d.status==='final'?'pill-green':'pill-grey'}">${d.status==='final'?'Final':'Draft'}</span></div>
+    <p class="small">${esc(c.id)} — ${esc(c.title)} ${cl?'· '+esc(cl.name):''}</p>
+    <label>Document Title</label>
+    <input value="${esc(d.title)}" oninput="updateDraftTitle('${id}',this.value)">
+    <label>Document Date</label>
+    <input type="date" value="${d.values.docDate||todayStr()}" oninput="updateDraftField('${id}','docDate',this.value)">
+    ${fieldsHtml}
+    <button class="btn btn-primary btn-block" onclick="saveDraft('${id}')">Save Draft</button>
+    <hr>
+    <h3>Preview</h3>
+    <div id="draftPreview" style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px;white-space:pre-wrap;font-size:13.5px;max-height:320px;overflow-y:auto">${esc(fullDocText(d,c,cl))}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn btn-gold" onclick="exportDraftPdf('${id}')">Print / Save as PDF</button>
+      <button class="btn btn-outline" onclick="exportDraftWord('${id}')">Download as Word (.doc)</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn btn-outline btn-sm" onclick="toggleDraftFinal('${id}')">${d.status==='final'?'Reopen as Draft':'Mark as Final'}</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteDraft('${id}')">Delete</button>
+    </div>
+    <p class="small" style="margin-top:10px">Last saved: ${d.updated?fmtDate(d.updated):'not yet'}. Tap <b>Save Draft</b> before leaving so edits aren't lost — you can reopen and continue any time.</p>
+  </div>`;
+}
+function updateDraftField(id,name,value){
+  const d = DB.drafts.find(x=>x.id===id); d.values[name]=value;
+  const c = caseById(d.caseId), cl = clientById(c.clientId);
+  const pv = document.getElementById('draftPreview'); if(pv) pv.textContent = fullDocText(d,c,cl);
+}
+function updateDraftTitle(id,val){ const d=DB.drafts.find(x=>x.id===id); d.title=val; }
+function saveDraft(id){ const d=DB.drafts.find(x=>x.id===id); d.updated=todayStr(); saveKey('drafts'); toast('Draft saved'); route(); }
+function toggleDraftFinal(id){ const d=DB.drafts.find(x=>x.id===id); d.status = d.status==='final'?'draft':'final'; d.updated=todayStr(); saveKey('drafts'); route(); toast(d.status==='final'?'Marked final':'Reopened as draft'); }
+function deleteDraft(id){
+  const d = DB.drafts.find(x=>x.id===id); if(!d) return;
+  if(!confirm('Delete this document? This cannot be undone.')) return;
+  const caseId = d.caseId;
+  DB.drafts = DB.drafts.filter(x=>x.id!==id); saveKey('drafts'); toast('Deleted');
+  gotoCaseTab(caseId,'drafts');
+}
+function exportDraftPdf(id){
+  const d = DB.drafts.find(x=>x.id===id); const c=caseById(d.caseId); const cl=clientById(c.clientId);
+  const text = fullDocText(d,c,cl);
+  const w = window.open('', '_blank');
+  if(!w){ toast('Allow pop-ups to export'); return; }
+  w.document.write(`<html><head><title>${esc(d.title||'TMI Document')}</title><style>
+    body{font-family:Georgia,'Times New Roman',serif;max-width:680px;margin:40px auto;color:#222;line-height:1.6;white-space:pre-wrap;font-size:14px;padding:0 20px}
+    </style></head><body>${esc(text)}</body></html>`);
+  w.document.close();
+  setTimeout(()=>{ w.focus(); w.print(); }, 350);
+}
+function exportDraftWord(id){
+  const d = DB.drafts.find(x=>x.id===id); const c=caseById(d.caseId); const cl=clientById(c.clientId);
+  const text = fullDocText(d,c,cl);
+  const html = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><meta charset='utf-8'><title>${esc(d.title||'TMI Document')}</title></head>
+    <body style="font-family:Georgia,'Times New Roman',serif;font-size:14px;white-space:pre-wrap;">${esc(text)}</body></html>`;
+  const blob = new Blob(['\ufeff'+html], {type:'application/msword'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url;
+  a.download = (d.title||'TMI-document').replace(/[^\w\- ]/g,'').trim()+'.doc';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url); toast('Word file downloaded');
+}
+
+/* ============== OPERATING MANUAL (T01–T16) ==============
+   Sixteen fixed, standalone procedure slots. Each can hold typed text
+   and/or one attached reference file. Each is independently viewable,
+   printable and exportable — not dependent on any case or upload. */
+function viewManual(){
+  ensureManual();
+  return `<div class="container">
+    <div class="section-title"><h2>TMI Operating Manual</h2><span class="small">T01–T16</span></div>
+    <p class="small">TMI's internal standard operating procedures. Each is its own standalone, printable document — available offline, independent of any case.</p>
+    <div class="card" style="background:var(--cream)">
+      <h3 style="margin-top:0">Upload your existing T01–T16 files</h3>
+      <p class="small">Already have the manual as Word/PDF files? Select them all at once — files named with their code (e.g. "T04 Assessment.docx") are matched automatically; anything else fills the next empty slot in order.</p>
+      <input type="file" id="bulkManualInput" multiple accept=".pdf,.doc,.docx,.txt,.rtf">
+      <button class="btn btn-gold btn-sm" style="margin-top:8px" onclick="bulkUploadManualFiles()">Upload &amp; Auto-Assign</button>
+    </div>
+    ${MANUAL_CODES.map(code=>{
+      const m = manualByCode(code);
+      const has = (m.title||m.body||m.fileId);
+      return `<a class="card" style="display:block;text-decoration:none;color:inherit" href="#/manualitem/${code}">
+        <div class="card-row"><b>${code}${m.title?' — '+esc(m.title):''}</b><span class="pill ${has?'pill-navy':'pill-grey'}">${has?'Set':'Empty'}</span></div>
+        ${m.fileName?`<div class="case-sub">File: ${esc(m.fileName)}</div>`:''}
+        ${m.body?`<div class="case-sub">${esc(m.body.slice(0,90))}${m.body.length>90?'…':''}</div>`:''}
+      </a>`;
+    }).join('')}
+  </div>`;
+}
+async function bulkUploadManualFiles(){
+  const input = document.getElementById('bulkManualInput');
+  const files = Array.from(input.files||[]);
+  if(!files.length){ toast('Choose one or more files first'); return; }
+  ensureManual();
+  let usedCodes = new Set();
+  const codeRe = /T\s?0?(\d{1,2})\b/i;
+  // First pass: match by filename
+  for(const file of files){
+    const m = file.name.match(codeRe);
+    if(m){
+      const num = parseInt(m[1],10);
+      if(num>=1 && num<=16){
+        const code = 'T'+String(num).padStart(2,'0');
+        if(!usedCodes.has(code)){ await assignManualFile(code, file); usedCodes.add(code); file.__assigned = true; }
+      }
+    }
+  }
+  // Second pass: unmatched files fill next empty slot in order
+  const remaining = files.filter(f=>!f.__assigned);
+  for(const file of remaining){
+    const nextCode = MANUAL_CODES.find(c=>!usedCodes.has(c) && !manualByCode(c).fileId);
+    if(!nextCode){ toast('All 16 slots are already filled — remove a file first to replace it'); break; }
+    await assignManualFile(nextCode, file); usedCodes.add(nextCode);
+  }
+  saveKey('manual'); toast(usedCodes.size+' file(s) assigned'); document.getElementById('app').innerHTML = viewManual();
+}
+async function assignManualFile(code, file){
+  const m = manualByCode(code);
+  const fileId = uid('MFILE');
+  try{
+    await idbPut({id:fileId, blob:file, filename:file.name, mimeType:file.type, size:file.size});
+    if(m.fileId){ try{ await idbDelete(m.fileId); }catch(e){} }
+    m.fileId=fileId; m.fileName=file.name; m.fileType=file.type; m.updated=todayStr();
+    if(!m.title){ m.title = file.name.replace(/\.[^.]+$/,'').replace(codeRefTitle,'').trim(); }
+  }catch(e){ toast('Could not store '+file.name); }
+}
+const codeRefTitle = /T\s?0?\d{1,2}\b[\s\-_.]*/i;
+function viewManualItem(code){
+  const m = manualByCode(code);
+  if(!m) return '<div class="container empty">Procedure not found.</div>';
+  return `<div class="container">
+    <a href="#/manual" class="small">&larr; Operating Manual</a>
+    <div class="section-title" style="margin-top:6px"><h2>${code}</h2></div>
+    <label>Procedure Title</label>
+    <input id="manTitle" value="${esc(m.title)}" placeholder="e.g. Estate Investigation Procedure" oninput="updateManualField('${code}','title',this.value)">
+    <label>Procedure Text</label>
+    <textarea id="manBody" rows="14" placeholder="Type or paste the full standalone procedure here…" oninput="updateManualField('${code}','body',this.value)">${esc(m.body)}</textarea>
+    <label>Attached reference file (optional)</label>
+    <input type="file" onchange="attachManualFile('${code}',this)">
+    ${m.fileId?`<div class="small" style="margin-top:6px">Attached: ${esc(m.fileName||'file')} — <a href="#" onclick="openStoredFile('${m.fileId}');return false;">Open</a> · <a href="#" onclick="removeManualFile('${code}');return false;">Remove</a></div>`:''}
+    <p class="small" style="margin-top:10px">Saves automatically as you type. ${m.updated?('Last saved '+fmtDate(m.updated)):''}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn btn-gold" onclick="printManualItem('${code}')">Print / Save as PDF</button>
+      <button class="btn btn-outline" onclick="exportManualWord('${code}')">Download as Word (.doc)</button>
+    </div>
+  </div>`;
+}
+let _manualSaveTimer = null;
+function updateManualField(code,field,val){
+  const m = manualByCode(code); m[field]=val; m.updated = todayStr();
+  clearTimeout(_manualSaveTimer);
+  _manualSaveTimer = setTimeout(()=>{ saveKey('manual'); }, 400);
+}
+async function attachManualFile(code,input){
+  const file = input.files[0]; if(!file) return;
+  const m = manualByCode(code);
+  const fileId = uid('MFILE');
+  try{
+    await idbPut({id:fileId, blob:file, filename:file.name, mimeType:file.type, size:file.size});
+    if(m.fileId){ try{ await idbDelete(m.fileId); }catch(e){} }
+    m.fileId=fileId; m.fileName=file.name; m.fileType=file.type; m.updated=todayStr();
+    saveKey('manual'); gotoManualItem(code); toast('File attached');
+  }catch(e){ toast('Could not store file on this device'); }
+}
+async function removeManualFile(code){
+  const m = manualByCode(code); if(!m.fileId) return;
+  if(!confirm('Remove the attached file from this procedure?')) return;
+  try{ await idbDelete(m.fileId); }catch(e){}
+  m.fileId=null; m.fileName=null; m.fileType=null; saveKey('manual'); gotoManualItem(code);
+}
+function gotoManualItem(code){ document.getElementById('app').innerHTML = viewManualItem(code); }
+function printManualItem(code){
+  const m = manualByCode(code);
+  const w = window.open('', '_blank');
+  if(!w){ toast('Allow pop-ups to export'); return; }
+  const title = 'TMI OPERATING PROCEDURE '+code+(m.title?' — '+m.title:'');
+  w.document.write(`<html><head><title>${esc(title)}</title><style>
+    body{font-family:Georgia,'Times New Roman',serif;max-width:680px;margin:40px auto;color:#222;line-height:1.6;white-space:pre-wrap;font-size:14px;padding:0 20px}
+    h1{font-size:18px}
+    </style></head><body><h1>${esc(title)}</h1>${esc(m.body||'')}</body></html>`);
+  w.document.close();
+  setTimeout(()=>{ w.focus(); w.print(); }, 350);
+}
+function exportManualWord(code){
+  const m = manualByCode(code);
+  const title = 'TMI OPERATING PROCEDURE '+code+(m.title?' — '+m.title:'');
+  const html = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><meta charset='utf-8'><title>${esc(title)}</title></head>
+    <body style="font-family:Georgia,'Times New Roman',serif;font-size:14px;white-space:pre-wrap;"><h1>${esc(title)}</h1>${esc(m.body||'')}</body></html>`;
+  const blob = new Blob(['\ufeff'+html], {type:'application/msword'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url;
+  a.download = code+(m.title?'-'+m.title.replace(/[^\w\- ]/g,'').trim():'')+'.doc';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url); toast('Word file downloaded');
+}
+
+/* ============== CASE REPORT (full handover) ============== */
+function viewCaseReport(id){
+  const c = caseById(id); if(!c) return '<div class="container empty">Case not found.</div>';
+  const cl = clientById(c.clientId);
+  const events = []; // chronology
+  events.push({date:c.dateOpened, label:'Case opened'});
+  commsForCase(id).forEach(m=>events.push({key:'comm_'+m.id, date:m.date, label:m.channel+' ('+m.direction+') with '+(m.party||'—')+(m.subject?': '+m.subject:'')}));
+  tasksForCase(id).filter(t=>t.status==='COMPLETED').forEach(t=>events.push({key:'task_'+t.id, date:t.due||c.dateOpened, label:'Task completed: '+t.description}));
+  if(c.dateClosed) events.push({date:c.dateClosed, label:'Case closed'});
+  events.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const docs = docsForCase(id);
+  const corr = DB.drafts.filter(d=>d.caseId===id && d.status==='final');
+  const comms = commsForCase(id);
+  const tasksAll = tasksForCase(id);
+  return `<div class="container">
+    <a href="#/case/${id}" class="small">&larr; Back to ${esc(id)}</a>
+    <div class="section-title" style="margin-top:6px"><h2>Case Report — ${esc(id)}</h2></div>
+    <p class="small">Choose what to include, then build the report. Everything is drawn from what's actually recorded on this case.</p>
+    <form id="reportForm">
+      <h3>Chronology (${events.length})</h3>
+      ${events.map((e,i)=>`<label style="display:flex;align-items:flex-start;gap:8px;font-weight:400;color:var(--charcoal)"><input type="checkbox" name="ev_${i}" checked style="width:auto;margin-top:3px"><span>${fmtDate(e.date)} — ${esc(e.label)}</span></label>`).join('') || '<p class="small">None.</p>'}
+      <h3>Correspondence — Final documents (${corr.length})</h3>
+      ${corr.map(d=>`<label style="display:flex;align-items:flex-start;gap:8px;font-weight:400;color:var(--charcoal)"><input type="checkbox" name="corr_${d.id}" checked style="width:auto;margin-top:3px"><span>${esc(d.title)} (${esc(TEMPLATES[d.templateKey]?.label||'')})</span></label>`).join('') || '<p class="small">No documents marked Final yet.</p>'}
+      <h3>Documents (${docs.length})</h3>
+      ${docs.map(d=>`<label style="display:flex;align-items:flex-start;gap:8px;font-weight:400;color:var(--charcoal)"><input type="checkbox" name="doc_${d.id}" checked style="width:auto;margin-top:3px"><span>${esc(d.name)} (${esc(d.type)})</span></label>`).join('') || '<p class="small">None.</p>'}
+      <h3>Communications log (${comms.length})</h3>
+      ${comms.map(m=>`<label style="display:flex;align-items:flex-start;gap:8px;font-weight:400;color:var(--charcoal)"><input type="checkbox" name="comm_${m.id}" checked style="width:auto;margin-top:3px"><span>${fmtDate(m.date)} — ${esc(m.channel)} ${esc(m.direction)}: ${esc((m.summary||'').slice(0,60))}</span></label>`).join('') || '<p class="small">None.</p>'}
+      <h3>Tasks (${tasksAll.length})</h3>
+      ${tasksAll.map(t=>`<label style="display:flex;align-items:flex-start;gap:8px;font-weight:400;color:var(--charcoal)"><input type="checkbox" name="task_${t.id}" checked style="width:auto;margin-top:3px"><span>${esc(t.description)} — ${esc(TASK_STATUSES.find(x=>x[0]===t.status)?.[1]||t.status)}</span></label>`).join('') || '<p class="small">None.</p>'}
+    </form>
+    <button class="btn btn-primary btn-block" onclick="buildCaseReport('${id}')">Build Report</button>
+    <div id="reportPreviewWrap"></div>
+  </div>`;
+}
+function buildCaseReport(id){
+  const c = caseById(id), cl = clientById(c.clientId);
+  const f = document.getElementById('reportForm');
+  const checked = name => { const el = f.querySelector(`[name="${name}"]`); return el && el.checked; };
+  const a = c.assessment||{}, w = c.work||{objective:'',currentPosition:'',issues:'',workLog:[]}, cz = c.closure||{};
+
+  const events = [];
+  events.push({date:c.dateOpened, label:'Case opened'});
+  commsForCase(id).forEach(m=>events.push({key:'comm_'+m.id, date:m.date, label:m.channel+' ('+m.direction+') with '+(m.party||'—')+(m.subject?': '+m.subject:'')}));
+  tasksForCase(id).filter(t=>t.status==='COMPLETED').forEach(t=>events.push({key:'task_'+t.id, date:t.due||c.dateOpened, label:'Task completed: '+t.description}));
+  if(c.dateClosed) events.push({date:c.dateClosed, label:'Case closed'});
+  events.sort((x,y)=>(x.date||'').localeCompare(y.date||''));
+  const evLines = events.map((e,i)=> checked('ev_'+i) ? fmtDate(e.date)+' — '+e.label : null).filter(Boolean);
+
+  const corr = DB.drafts.filter(d=>d.caseId===id && d.status==='final').filter(d=>checked('corr_'+d.id));
+  const docs = docsForCase(id).filter(d=>checked('doc_'+d.id));
+  const comms = commsForCase(id).filter(m=>checked('comm_'+m.id));
+  const tasksSel = tasksForCase(id).filter(t=>checked('task_'+t.id));
+
+  const sections = [];
+  sections.push(['1. EXECUTIVE SUMMARY', `Case ${c.id} — ${c.title}\nClient: ${cl?cl.name:'—'}\nStatus: ${statusMeta(CASE_STATUSES,c.status).label}\nOpened: ${fmtDate(c.dateOpened)}${c.dateClosed?('\nClosed: '+fmtDate(c.dateClosed)):''}`]);
+  sections.push(['2. CLIENT & MATTER DETAILS', `Client: ${cl?cl.name:'—'}\nContact: ${cl?(cl.phone||cl.email||'—'):'—'}\nMatter: ${c.title}\nCategory: ${c.category||'—'}${c.workType?(' / '+c.workType):''}\nDescription: ${c.description||'—'}`]);
+  sections.push(['3. BACKGROUND', c.description||'—']);
+  sections.push(['4. CHRONOLOGY OF EVENTS', evLines.length?evLines.join('\n'):'—']);
+  sections.push(['5. ASSESSMENT & ISSUES IDENTIFIED', [['Issue',a.issue],['Facts established',a.facts],['Missing information',a.missingInfo],['Key issues (work)',w.issues]].map(([k,v])=>k+': '+(v||'—')).join('\n')]);
+  sections.push(['6. RESEARCH & FINDINGS', a.researchNotes||'—']);
+  sections.push(['7. ACTIONS TAKEN', (w.workLog&&w.workLog.length)? w.workLog.map(l=>new Date(l.date).toLocaleDateString('en-ZA')+' — '+l.text).join('\n') : '—']);
+  sections.push(['8. CORRESPONDENCE', corr.length? corr.map(d=>'• '+d.title+' ('+(TEMPLATES[d.templateKey]?.label||'')+')').join('\n') : '—']);
+  sections.push(['9. COMMUNICATIONS', comms.length? comms.map(m=>fmtDate(m.date)+' — '+m.channel+' ('+m.direction+') with '+(m.party||'—')+': '+(m.summary||'')).join('\n') : '—']);
+  sections.push(['10. DOCUMENTS', docs.length? docs.map(d=>'• '+d.name+' ('+d.type+')'+(d.fileName?' — file: '+d.fileName:'')).join('\n') : '—']);
+  sections.push(['11. TASKS', tasksSel.length? tasksSel.map(t=>'• '+t.description+' — '+(TASK_STATUSES.find(x=>x[0]===t.status)?.[1]||t.status)+(t.due?(' (due '+fmtDate(t.due)+')'):'')).join('\n') : '—']);
+  sections.push(['12. OUTSTANDING MATTERS', cz.outstanding||'—']);
+  sections.push(['13. OUTCOME / RESOLUTION', cz.outcome||'—']);
+  sections.push(['14. NEXT STEPS', c.nextAction? (c.nextAction+(c.nextActionDue?' (due '+fmtDate(c.nextActionDue)+')':'')) : '—']);
+  sections.push(['15. SUPPORTING DOCUMENTS INDEX', docs.length? docs.map((d,i)=>(i+1)+'. '+d.name+' — '+d.type).join('\n') : 'None indexed.']);
+
+  const text = `TMI — CASE REPORT\n${c.id} — ${c.title}\nClient: ${cl?cl.name:'—'}\nDate prepared: ${fmtDate(todayStr())}\n\n`
+    + sections.map(([h,b])=>h+'\n'+'-'.repeat(Math.min(h.length,40))+'\n'+b).join('\n\n');
+
+  const wrap = document.getElementById('reportPreviewWrap');
+  wrap.innerHTML = `<hr><h3>Report Preview (editable)</h3>
+    <textarea id="reportText" rows="20" style="font-family:Georgia,serif;font-size:13px">${esc(text)}</textarea>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn btn-gold" onclick="printCaseReport('${id}')">Print / Save as PDF</button>
+      <button class="btn btn-outline" onclick="exportCaseReportWord('${id}')">Download as Word (.doc)</button>
+    </div>
+    <p class="small" style="margin-top:8px">Edit the text above before exporting if needed — sections are a starting point, not a locked template.</p>`;
+  wrap.scrollIntoView({behavior:'smooth'});
+}
+function printCaseReport(id){
+  const c = caseById(id);
+  const text = document.getElementById('reportText').value;
+  const w = window.open('', '_blank');
+  if(!w){ toast('Allow pop-ups to export'); return; }
+  w.document.write(`<html><head><title>${esc('TMI Case Report — '+c.id)}</title><style>
+    body{font-family:Georgia,'Times New Roman',serif;max-width:680px;margin:40px auto;color:#222;line-height:1.6;white-space:pre-wrap;font-size:13.5px;padding:0 20px}
+    </style></head><body>${esc(text)}</body></html>`);
+  w.document.close();
+  setTimeout(()=>{ w.focus(); w.print(); }, 350);
+}
+function exportCaseReportWord(id){
+  const c = caseById(id);
+  const text = document.getElementById('reportText').value;
+  const html = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><meta charset='utf-8'><title>TMI Case Report</title></head>
+    <body style="font-family:Georgia,'Times New Roman',serif;font-size:13.5px;white-space:pre-wrap;">${esc(text)}</body></html>`;
+  const blob = new Blob(['\ufeff'+html], {type:'application/msword'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url;
+  a.download = 'TMI-Case-Report-'+c.id+'.doc';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url); toast('Word file downloaded');
+}
+
+/* ============== DELETE: CLIENTS / CASES / ENQUIRIES / TASKS / COMMS ============== */
+function deleteClient(id){
+  const openCases = casesForClient(id);
+  if(openCases.length){ alert('This client has '+openCases.length+' case(s) linked. Delete or reassign those cases first before deleting the client.'); return; }
+  if(!confirm('Delete this client? This cannot be undone.')) return;
+  DB.clients = DB.clients.filter(c=>c.id!==id); saveKey('clients'); toast('Client deleted'); location.hash='#/clients';
+}
+async function deleteCase(id){
+  if(!confirm('Delete case '+id+'? This permanently removes its tasks, communications, correspondence and documents (including stored files). This cannot be undone.')) return;
+  const docs = docsForCase(id);
+  for(const d of docs){ if(d.fileId){ try{ await idbDelete(d.fileId); }catch(e){} } }
+  DB.documents = DB.documents.filter(d=>d.caseId!==id);
+  DB.tasks = DB.tasks.filter(t=>t.caseId!==id);
+  DB.communications = DB.communications.filter(m=>m.caseId!==id);
+  DB.drafts = DB.drafts.filter(d=>d.caseId!==id);
+  DB.cases = DB.cases.filter(c=>c.id!==id);
+  saveKey('documents'); saveKey('tasks'); saveKey('communications'); saveKey('drafts'); saveKey('cases');
+  toast('Case deleted'); location.hash='#/cases';
+}
+function deleteEnquiry(id){
+  const e = DB.enquiries.find(x=>x.id===id);
+  const msg = e && e.convertedCaseId ? 'This enquiry was already converted to case '+e.convertedCaseId+'. Deleting it only removes the enquiry record — the case itself is kept. Continue?' : 'Delete this enquiry? This cannot be undone.';
+  if(!confirm(msg)) return;
+  DB.enquiries = DB.enquiries.filter(x=>x.id!==id); saveKey('enquiries'); toast('Enquiry deleted'); location.hash='#/enquiries';
+}
+function deleteTaskRecord(id){
+  const t = DB.tasks.find(x=>x.id===id); if(!t) return;
+  if(!confirm('Delete this task? This cannot be undone.')) return;
+  const caseId = t.caseId;
+  DB.tasks = DB.tasks.filter(x=>x.id!==id); saveKey('tasks'); toast('Task deleted');
+  if(window.__caseTab && caseId) gotoCaseTab(caseId,'tasks'); else route();
+}
+function deleteComm(id){
+  const m = DB.communications.find(x=>x.id===id); if(!m) return;
+  if(!confirm('Delete this communication log entry? This cannot be undone.')) return;
+  const caseId = m.caseId;
+  DB.communications = DB.communications.filter(x=>x.id!==id); saveKey('communications'); toast('Communication deleted');
+  if(window.__caseTab && caseId) gotoCaseTab(caseId,'communications'); else route();
+}
+
+/* ============== TASKS (global) ============== */
+function viewTasks(params){
+  params = params || new URLSearchParams();
+  let list = [...DB.tasks];
+  let filterLabel = '';
+  if(params.get('overdue')==='1'){ list = list.filter(t=>isOverdue(t.due,t.status)); filterLabel='Overdue'; }
+  list.sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999'));
+  return `<div class="container">
+    <div class="section-title"><h2>Tasks</h2><span class="small">${list.length}${filterLabel?' — '+esc(filterLabel):''}</span></div>
+    ${filterLabel?`<p class="small"><a href="#/tasks">Clear filter</a></p>`:''}
+    ${list.length? list.map(taskCardHtml).join('') : '<div class="empty">No tasks match this view.</div>'}
+  </div>`;
+}
+function openTaskForm(prefCaseId){
+  openModal(`<button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2>New Task</h2>
+    <form onsubmit="return submitTask(event)">
+      <label>Case *</label>
+      <select name="caseId" required>${DB.cases.filter(c=>c.status!=='CLOSED').map(c=>`<option value="${c.id}" ${c.id===prefCaseId?'selected':''}>${c.id} — ${esc(c.title)}</option>`).join('')}</select>
+      <label>Task description *</label><input name="description" required>
+      <label>Priority</label><select name="priority">${optionsHtml(PRIORITIES,'NORMAL')}</select>
+      <label>Due date</label><input type="date" name="due">
+      <label>Notes</label><textarea name="notes" rows="2"></textarea>
+      <button class="btn btn-primary btn-block" type="submit">Save Task</button>
+    </form>`);
+}
+function submitTask(ev){
+  ev.preventDefault(); const f=new FormData(ev.target);
+  const t = {id:uid('T'),caseId:f.get('caseId'),description:f.get('description'),assignedTo:'TMI',status:'TO_DO',
+    priority:f.get('priority'),created:todayStr(),due:f.get('due'),completed:'',notes:f.get('notes')};
+  DB.tasks.push(t); saveKey('tasks'); closeModal(); toast('Task added');
+  if(window.__caseTab) gotoCaseTab(t.caseId,'tasks'); else route();
+}
+function updateTaskStatus(id,status){
+  const t = DB.tasks.find(x=>x.id===id); t.status=status; if(status==='COMPLETED') t.completed=todayStr();
+  saveKey('tasks'); gotoCaseTab(t.caseId,'tasks'); toast('Task updated');
+}
+
+/* ============== DOCUMENTS (global) ============== */
+function viewDocuments(){
+  const list = [...DB.documents].sort((a,b)=>(b.dateReceived||'').localeCompare(a.dateReceived||''));
+  return `<div class="container">
+    <div class="section-title"><h2>Documents</h2><span class="small">${list.length} total</span></div>
+    ${list.length? list.map(d=>{ const c=caseById(d.caseId); return `<div class="card">
+        <div class="card-row"><b>${esc(d.name)}</b><span class="pill pill-navy">${esc(d.status)}</span></div>
+        <div class="case-sub">${c?`<a href="#/case/${c.id}">${c.id}</a>`:''} · ${esc(d.type)}</div>
+        ${d.fileId?`<div style="margin-top:6px;display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="openStoredFile('${d.fileId}')">Open</button><span class="small">${esc(d.fileName||'')}</span></div>`:''}
+        ${d.link?`<div class="linkline small"><a href="${esc(d.link)}" target="_blank" rel="noopener">${esc(d.link)}</a></div>`:''}
+      </div>`;}).join('') : '<div class="empty">No documents yet. Upload a file from your phone, or log a link, from within any case.</div>'}
+    <div class="footer-note">Uploaded files are stored on this device only, using this browser's own file storage.</div>
+  </div>`;
+}
+function openDocumentForm(prefCaseId){
+  openModal(`<button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2>Add Document</h2>
+    <form onsubmit="return submitDocument(event)">
+      <label>Case *</label>
+      <select name="caseId" required>${DB.cases.map(c=>`<option value="${c.id}" ${c.id===prefCaseId?'selected':''}>${c.id} — ${esc(c.title)}</option>`).join('')}</select>
+      <label>Document name *</label><input name="name" required placeholder="e.g. Death Certificate">
+      <label>Type</label><select name="type">${optionsHtml(DOC_TYPES)}</select>
+      <label>Upload file from this device (optional)</label>
+      <input type="file" name="file">
+      <p class="small" style="margin:2px 0 0">Photos, PDFs and scans stored on this phone. Leave blank if you'd rather just log a link below.</p>
+      <label>Date received</label><input type="date" name="dateReceived" value="${todayStr()}">
+      <label>Source</label><input name="source" placeholder="Client / Institution / TMI">
+      <label>Status</label><select name="status"><option>Received</option><option>Reviewed</option><option>Draft</option><option>Client Review</option><option>Approved</option><option>Submitted</option><option>Response Received</option><option>Final</option></select>
+      <label>Link (Drive / WhatsApp / other — optional, instead of or as well as uploading)</label><input name="link" placeholder="https://drive.google.com/...">
+      <label>Notes</label><textarea name="notes" rows="2"></textarea>
+      <button class="btn btn-primary btn-block" type="submit">Save Document</button>
+    </form>`);
+}
+async function submitDocument(ev){
+  ev.preventDefault(); const f=new FormData(ev.target);
+  const d = {id:uid('DOC'),caseId:f.get('caseId'),name:f.get('name'),type:f.get('type'),dateReceived:f.get('dateReceived'),
+    source:f.get('source'),status:f.get('status'),link:f.get('link'),notes:f.get('notes'),fileId:null,fileName:null,fileType:null,fileSize:null};
+  const file = f.get('file');
+  if(file && file.size>0){
+    const fileId = uid('FILE');
+    try{
+      await idbPut({id:fileId, blob:file, filename:file.name, mimeType:file.type, size:file.size});
+      d.fileId = fileId; d.fileName = file.name; d.fileType = file.type; d.fileSize = file.size;
+    }catch(e){ toast('Could not store file on this device — logged without it'); }
+  }
+  DB.documents.push(d); saveKey('documents'); closeModal(); toast('Document saved');
+  if(window.__caseTab) gotoCaseTab(d.caseId,'documents'); else route();
+}
+async function openStoredFile(fileId){
+  try{
+    const rec = await idbGet(fileId);
+    if(!rec){ toast('File not found on this device'); return; }
+    const url = URL.createObjectURL(rec.blob);
+    const w = window.open(url, '_blank');
+    if(!w){
+      const a = document.createElement('a'); a.href=url; a.download=rec.filename||'document'; a.click();
+    }
+    setTimeout(()=>URL.revokeObjectURL(url), 30000);
+  }catch(e){ toast('Could not open file'); }
+}
+async function deleteDocument(id){
+  const d = DB.documents.find(x=>x.id===id); if(!d) return;
+  if(!confirm('Delete this document record'+(d.fileId?' and its stored file':'')+'?')) return;
+  if(d.fileId){ try{ await idbDelete(d.fileId); }catch(e){} }
+  const caseId = d.caseId;
+  DB.documents = DB.documents.filter(x=>x.id!==id); saveKey('documents'); toast('Document deleted');
+  if(window.__caseTab) gotoCaseTab(caseId,'documents'); else route();
+}
+
+/* ============== COMMUNICATIONS (global) ============== */
+function viewComms(){
+  const list = [...DB.communications].sort((a,b)=>b.date.localeCompare(a.date));
+  return `<div class="container">
+    <div class="section-title"><h2>Communications</h2><span class="small">${list.length} total</span></div>
+    ${list.length? list.map(m=>{ const c=caseById(m.caseId); return `<div class="card">
+        <div class="card-row"><b>${esc(m.channel)} — ${esc(m.direction)}</b><span class="small">${fmtDate(m.date)}</span></div>
+        <div class="case-sub">${c?`<a href="#/case/${c.id}">${c.id}</a>`:''} ${m.party?'· '+esc(m.party):''}</div>
+        <div class="small">${esc(m.summary)}</div>
+        ${m.followUpTaskId?`<div class="small" style="margin-top:4px;color:var(--amber)">⏰ Follow-up task due ${fmtDate(m.followUpDate)}</div>`:''}
+      </div>`;}).join('') : '<div class="empty">Nothing logged yet.</div>'}
+  </div>`;
+}
+function openCommForm(prefCaseId){
+  openModal(`<button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2>Log Communication</h2>
+    <form onsubmit="return submitComm(event)">
+      <label>Case *</label>
+      <select name="caseId" required>${DB.cases.map(c=>`<option value="${c.id}" ${c.id===prefCaseId?'selected':''}>${c.id} — ${esc(c.title)}</option>`).join('')}</select>
+      <label>Date</label><input type="date" name="date" value="${todayStr()}">
+      <label>Channel</label><select name="channel">${optionsHtml(CHANNELS)}</select>
+      <label>Direction</label><select name="direction">${optionsHtml(DIRECTIONS)}</select>
+      <label>With (party)</label><input name="party" placeholder="Client / Bank / Master's Office...">
+      <label>Subject</label><input name="subject">
+      <label>Summary *</label><textarea name="summary" rows="3" required placeholder="What was said / what happened"></textarea>
+      <div class="card" style="background:var(--cream);margin:10px 0 4px">
+        <label style="display:flex;align-items:center;gap:8px;margin:0">
+          <input type="checkbox" name="createFollowUp" id="createFollowUp" onchange="document.getElementById('followUpDateWrap').style.display=this.checked?'block':'none'" style="width:auto">
+          This needs a follow-up — create a task automatically
+        </label>
+        <div id="followUpDateWrap" style="display:none;margin-top:8px">
+          <label>Follow-up due date</label><input type="date" name="followUpDate">
+          <label>Follow-up task description</label><input name="followUpDesc" placeholder="e.g. Follow up with executor">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">Save</button>
+    </form>`);
+}
+function submitComm(ev){
+  ev.preventDefault(); const f=new FormData(ev.target);
+  const c = caseById(f.get('caseId'));
+  const m = {id:uid('COM'),caseId:f.get('caseId'),clientId:c?c.clientId:null,date:f.get('date'),channel:f.get('channel'),
+    direction:f.get('direction'),party:f.get('party'),subject:f.get('subject'),summary:f.get('summary'),followUpDate:f.get('followUpDate'),followUpTaskId:null};
+  let taskMade=false;
+  if(f.get('createFollowUp')==='on' && f.get('followUpDate')){
+    const t = {id:uid('T'),caseId:m.caseId,description:f.get('followUpDesc')||('Follow up: '+(m.party||m.subject||'communication')),
+      assignedTo:'TMI',status:'TO_DO',priority:'NORMAL',created:todayStr(),due:f.get('followUpDate'),completed:'',
+      notes:'Auto-created from communication log ('+(m.channel||'')+' with '+(m.party||'—')+', '+fmtDate(m.date)+').'};
+    DB.tasks.push(t); saveKey('tasks'); m.followUpTaskId = t.id; taskMade=true;
+  }
+  DB.communications.push(m); saveKey('communications'); closeModal();
+  toast(taskMade ? 'Logged — follow-up task created' : 'Logged');
+  if(window.__caseTab) gotoCaseTab(m.caseId,'communications'); else route();
+}
+
+/* ============== SEARCH ============== */
+function viewSearch(){
+  return `<div class="container">
+    <h2>Search</h2>
+    <input id="searchInput" placeholder="Search clients, cases, tasks, documents…" oninput="doSearch(this.value)" autofocus>
+    <div id="searchResults" style="margin-top:14px"></div>
+  </div>`;
+}
+function doSearch(q){
+  const box = document.getElementById('searchResults');
+  if(!q || q.length<2){ box.innerHTML=''; return; }
+  const ql = q.toLowerCase(); let html='';
+  const clientHits = DB.clients.filter(c=>(c.name+c.phone+c.email).toLowerCase().includes(ql));
+  const caseHits = DB.cases.filter(c=>(c.id+c.title+c.category+c.description).toLowerCase().includes(ql));
+  const taskHits = DB.tasks.filter(t=>t.description.toLowerCase().includes(ql));
+  const docHits = DB.documents.filter(d=>(d.name+d.notes).toLowerCase().includes(ql));
+  const commHits = DB.communications.filter(m=>(m.summary+m.subject+m.party).toLowerCase().includes(ql));
+  if(clientHits.length) html += `<h4>Clients</h4>` + clientHits.map(c=>`<a class="card" style="display:block;text-decoration:none;color:inherit" href="#/client/${c.id}">${esc(c.name)}</a>`).join('');
+  if(caseHits.length) html += `<h4>Cases</h4>` + caseHits.map(caseCardHtml).join('');
+  if(taskHits.length) html += `<h4>Tasks</h4>` + taskHits.map(taskCardHtml).join('');
+  if(docHits.length) html += `<h4>Documents</h4>` + docHits.map(d=>`<div class="card">${esc(d.name)} <span class="small">(${caseById(d.caseId)?.id||''})</span></div>`).join('');
+  if(commHits.length) html += `<h4>Communications</h4>` + commHits.map(m=>`<div class="card">${esc(m.summary)} <span class="small">(${caseById(m.caseId)?.id||''})</span></div>`).join('');
+  box.innerHTML = html || '<div class="empty">No matches.</div>';
+}
+
+/* ============== SETTINGS / BACKUP ============== */
+function viewSettings(){
+  const installable = !!window.__deferredInstallPrompt;
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  return `<div class="container">
+    <h2>Backup &amp; Settings</h2>
+
+    <div class="card">
+      <h3 style="margin-top:0">Install as an app on your phone</h3>
+      ${standalone ? `<p class="small" style="margin-bottom:0">✓ You're already using this as an installed app.</p>` :
+        installable ? `<button class="btn btn-gold btn-block" onclick="promptInstall()">Install TMI Casework Hub</button>`
+        : `<p class="small">In Chrome on your phone, tap the <b>⋮ menu</b> (top right) → <b>"Add to Home screen"</b>. Confirm the name — it drops a TMI icon on your home screen that opens straight into the Hub.</p>
+           <p class="small" style="margin-bottom:0"><b>Important:</b> only do this from the exact copy of the file saved on your phone (e.g. in Downloads) — not from a WhatsApp/email attachment preview, which can open a fresh temporary copy each time and lose your data. Save the file once, open it from your Files app, then Add to Home Screen from there.</p>`}
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0">How this actually stores your data</h3>
+      <p class="small"><b>Case records</b> (clients, cases, tasks, communications, drafts) are stored in this phone's browser storage (<b>localStorage</b>). <b>Uploaded files</b> (photos, PDFs, scans) are stored separately in <b>IndexedDB</b>, built for larger files.</p>
+      <p class="small">Both are tied to <b>this exact saved file, opened the same way each time</b> — that's the one thing that actually matters for this to keep working. Always open it from the same place (e.g. tap the home-screen icon, or always open the same file in your Files app) rather than re-opening a shared/attached copy, which Android can treat as a brand-new, empty file.</p>
+      <p class="small" style="margin-bottom:0">They're cleared if you clear this browser's site data, uninstall it, or factory-reset the phone — so <b>export a backup regularly</b> below. There's no cloud copy unless you make one yourself.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0">Google Drive (optional — skip this if you don't want it)</h3>
+      ${driveIsConnected() ? `
+        <p class="small">✓ Connected${driveUserEmail?(' as <b>'+esc(driveUserEmail)+'</b>'):''}. New cases automatically get a Drive folder, and you can push individual documents to Drive from any case's Documents tab.</p>
+        <button class="btn btn-outline btn-block" onclick="driveDisconnect()">Disconnect</button>
+      ` : `
+        <p class="small">Not connected — the Hub works fully without this. If you'd ever like TMI to also keep a copy of documents in your own Google Drive (one folder per case), that needs Google's own sign-in step, which only works when this page has a real web address rather than being opened as a downloaded file — so it's a later, optional upgrade, not something this download can do on its own. Full steps are in the README if you want to set it up down the line.</p>
+      `}
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0">Full case archive (recommended)</h3>
+      <p class="small">Builds one .zip with all case data <b>and</b> every uploaded document/photo, organised into folders by case — a genuine portable case file, not just a data dump.</p>
+      <button class="btn btn-primary btn-block" onclick="exportFullBackupZip()">Export Full Case Archive (.zip)</button>
+      <div id="shareBackupBtnWrap"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0">Quick backup (records only)</h3>
+      <button class="btn btn-outline btn-block" onclick="exportBackup()">Export Records Only (.json)</button>
+      <p class="small" style="margin-bottom:0">Faster, but doesn't include uploaded files — use the Full Case Archive above for anything that matters.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0">Restore from backup</h3>
+      <label>Restore from a records (.json) backup</label>
+      <input type="file" id="importFile" accept="application/json">
+      <button class="btn btn-outline btn-block" onclick="importBackup()">Import Backup</button>
+    </div>
+
+    <p class="small">Case numbering: next case will be <b>TMI-${new Date().getFullYear()}-${String(DB.settings.nextSeq).padStart(4,'0')}</b>. This counter is saved and will not reset or repeat.</p>
+    <hr>
+    <button class="btn btn-danger btn-block" onclick="if(confirm('This deletes ALL data in this Hub, including uploaded files. Export a backup first. Continue?')) resetAll()">Reset All Data</button>
+  </div>`;
+}
+function promptInstall(){
+  const p = window.__deferredInstallPrompt; if(!p){ toast('Use your browser menu → Add to Home screen'); return; }
+  p.prompt();
+  p.userChoice.finally(()=>{ window.__deferredInstallPrompt = null; route(); });
+}
+function loadJSZip(){
+  return new Promise((resolve,reject)=>{
+    if(window.JSZip) return resolve();
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onload = ()=>resolve(); s.onerror = ()=>reject(new Error('Could not load zip library — check your internet connection.'));
+    document.head.appendChild(s);
+  });
+}
+async function exportFullBackupZip(){
+  try{
+    toast('Building archive...');
+    await loadJSZip();
+    const zip = new JSZip();
+    zip.file('tmi-data.json', JSON.stringify(DB,null,2));
+    zip.file('README.txt', 'TMI Casework Hub — full case archive exported '+todayStr()+'.\n\ntmi-data.json restores all case records via Settings → Restore.\nEach Cases/ folder below contains the actual uploaded documents for that matter.');
+    const casesFolder = zip.folder('Cases');
+    for(const c of DB.cases){
+      const cl = clientById(c.clientId);
+      const cFolder = casesFolder.folder(c.id + (cl?(' - '+cl.name.replace(/[\/\\]/g,'-')):''));
+      cFolder.file('case-summary.txt', [
+        'Case: '+c.id, 'Title: '+(c.title||''), 'Client: '+(cl?cl.name:''), 'Category: '+(c.category||''),
+        'Work type: '+(c.workType||''), 'Status: '+(c.status||''), 'Opened: '+(c.dateOpened||''),
+        'Next action: '+(c.nextAction||'')+(c.nextActionDue?(' — due '+c.nextActionDue):'')
+      ].join('\n'));
+      const docs = docsForCase(c.id);
+      for(const d of docs){
+        if(!d.fileId) continue;
+        try{
+          const rec = await idbGet(d.fileId);
+          if(rec && rec.blob) cFolder.folder(d.type||'Other').file(d.fileName || (d.name||'document'), rec.blob);
+        }catch(e){}
+      }
+    }
+    const blob = await zip.generateAsync({type:'blob'});
+    window.__lastBackupBlob = blob;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download='tmi-full-archive-'+todayStr()+'.zip'; a.click();
+    URL.revokeObjectURL(url);
+    toast('Archive downloaded');
+    const wrap = document.getElementById('shareBackupBtnWrap');
+    if(wrap && navigator.canShare){
+      const file = new File([blob], 'tmi-full-archive-'+todayStr()+'.zip', {type:'application/zip'});
+      if(navigator.canShare({files:[file]})){
+        wrap.innerHTML = `<button class="btn btn-outline btn-block" style="margin-top:8px" onclick="shareLastBackup()">Share to Google Drive / WhatsApp / Email...</button>`;
+      }
+    }
+  }catch(e){ toast('Archive failed: '+e.message); }
+}
+async function shareLastBackup(){
+  if(!window.__lastBackupBlob){ toast('Export the archive first'); return; }
+  try{
+    const file = new File([window.__lastBackupBlob], 'tmi-full-archive-'+todayStr()+'.zip', {type:'application/zip'});
+    await navigator.share({files:[file], title:'TMI Casework Hub backup'});
+  }catch(e){ /* user cancelled share sheet — not an error */ }
+}
+function exportBackup(){
+  const blob = new Blob([JSON.stringify(DB,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download = 'tmi-casework-backup-'+todayStr()+'.json'; a.click();
+  URL.revokeObjectURL(url); toast('Backup downloaded');
+}
+function importBackup(){
+  const file = document.getElementById('importFile').files[0];
+  if(!file){ toast('Choose a file first'); return; }
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try{
+      const data = JSON.parse(reader.result);
+      for(const k of KEYS){ if(data[k]!==undefined){ DB[k]=data[k]; await saveKey(k); } }
+      ensureManual(); saveKey('manual');
+      toast('Backup restored'); route();
+    }catch(e){ toast('Invalid backup file'); }
+  };
+  reader.readAsText(file);
+}
+async function resetAll(){
+  DB = {clients:[],enquiries:[],cases:[],tasks:[],communications:[],documents:[],drafts:[],manual:[],settings:{nextSeq:1,seqYear:new Date().getFullYear()}};
+  ensureManual();
+  for(const k of KEYS) saveKey(k);
+  try{
+    _idb && _idb.close(); _idb = null;
+    await new Promise((res)=>{ const req = indexedDB.deleteDatabase('tmihub_files_v1'); req.onsuccess=res; req.onerror=res; req.onblocked=res; });
+  }catch(e){}
+  toast('All data cleared'); location.hash='#/dashboard'; route();
+}
+
+/* ============== PWA: INSTALL + SERVICE WORKER ============== */
+window.__deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); window.__deferredInstallPrompt = e; if(location.hash.replace('#/','')==='settings') route(); });
+function registerServiceWorker(){
+  if(!('serviceWorker' in navigator)) return;
+  if(location.protocol==='file:') return; // service workers cannot run on file:// — needs hosting
+  navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+}
+
+/* ============== GOOGLE DRIVE (OPTIONAL) ==============
+   Off by default. Nothing here runs, and no Google script is loaded,
+   until the user pastes their own free Google OAuth Client ID into
+   Settings and taps Connect. Uses the 'drive.file' scope only — this
+   app can only see/create files it made itself, never your whole Drive.
+   The access token lives in memory only (never saved to disk), so you
+   reconnect each time you reopen the Hub — deliberately, for safety. */
+const DRIVE_SUBFOLDERS = DOC_TYPES; // one Drive subfolder per document type, same names
+let driveToken = null, driveTokenExpiry = 0, driveTokenClient = null, driveUserEmail = '';
+function driveIsConnected(){ return !!(driveToken && Date.now() < driveTokenExpiry); }
+function loadGisScript(){
+  return new Promise((resolve,reject)=>{
+    if(window.google && window.google.accounts && window.google.accounts.oauth2) return resolve();
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.onload = ()=>resolve(); s.onerror = ()=>reject(new Error('Could not load Google sign-in script — check your internet connection.'));
+    document.head.appendChild(s);
+  });
+}
+async function driveConnect(){
+  const idInput = document.getElementById('driveClientId');
+  const clientId = (idInput ? idInput.value.trim() : (DB.settings.driveClientId||''));
+  if(!clientId){ toast('Paste your Google OAuth Client ID first'); return; }
+  DB.settings.driveClientId = clientId; saveKey('settings');
+  try{
+    toast('Connecting to Google...');
+    await loadGisScript();
+    await new Promise((resolve,reject)=>{
+      driveTokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email',
+        callback: async (resp)=>{
+          if(resp.error){ reject(new Error(resp.error)); return; }
+          driveToken = resp.access_token; driveTokenExpiry = Date.now() + (Number(resp.expires_in||3600)-60)*1000;
+          try{
+            const me = await driveApiFetch('https://www.googleapis.com/oauth2/v2/userinfo');
+            driveUserEmail = me.email || '';
+          }catch(e){ driveUserEmail=''; }
+          await driveEnsureRoot();
+          resolve();
+        }
+      });
+      driveTokenClient.requestAccessToken({prompt: driveToken ? '' : 'consent'});
+    });
+    toast('Google Drive connected'); route();
+  }catch(e){ toast('Could not connect: '+e.message); }
+}
+function driveDisconnect(){
+  if(driveToken && window.google) { try{ google.accounts.oauth2.revoke(driveToken, ()=>{}); }catch(e){} }
+  driveToken=null; driveTokenExpiry=0; driveUserEmail=''; toast('Disconnected'); route();
+}
+async function driveApiFetch(url, opts){
+  opts = opts || {};
+  opts.headers = Object.assign({}, opts.headers, {Authorization: 'Bearer '+driveToken});
+  const res = await fetch(url, opts);
+  if(!res.ok){ const t = await res.text().catch(()=> ''); throw new Error('Drive API error '+res.status+' '+t.slice(0,200)); }
+  return res.json();
+}
+async function driveFindOrCreateFolder(name, parentId){
+  const q = encodeURIComponent(`name='${name.replace(/'/g,"\\'")}' and mimeType='application/vnd.google-apps.folder' and trashed=false` + (parentId?` and '${parentId}' in parents`:''));
+  const found = await driveApiFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`);
+  if(found.files && found.files.length) return found.files[0].id;
+  const meta = {name, mimeType:'application/vnd.google-apps.folder'};
+  if(parentId) meta.parents=[parentId];
+  const created = await driveApiFetch('https://www.googleapis.com/drive/v3/files?fields=id', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(meta)});
+  return created.id;
+}
+async function driveEnsureRoot(){
+  if(DB.settings.driveRootFolderId) return DB.settings.driveRootFolderId;
+  const id = await driveFindOrCreateFolder('TMI Clients', null);
+  DB.settings.driveRootFolderId = id; saveKey('settings');
+  return id;
+}
+async function driveCreateCaseFolder(caseId){
+  if(!driveIsConnected()) throw new Error('Not connected');
+  const c = caseById(caseId); if(!c) return;
+  if(c.driveFolderId) return c.driveFolderId;
+  const root = await driveEnsureRoot();
+  const cl = clientById(c.clientId);
+  const folderName = c.id + (cl?(' - '+cl.name):'');
+  const folderId = await driveFindOrCreateFolder(folderName, root);
+  c.driveFolderId = folderId; c.driveSubfolders = c.driveSubfolders || {};
+  for(const type of DRIVE_SUBFOLDERS){
+    if(!c.driveSubfolders[type]){
+      c.driveSubfolders[type] = await driveFindOrCreateFolder(type, folderId);
+    }
+  }
+  saveKey('cases'); toast('Drive folder ready for '+c.id);
+  return folderId;
+}
+function driveCaseFolderBannerHtml(c){
+  if(!driveIsConnected()) return '';
+  if(c.driveFolderId){
+    return `<div class="card" style="background:var(--cream);display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <div class="small">📁 This case has a Google Drive folder.</div>
+      <a class="btn btn-outline btn-sm" href="https://drive.google.com/drive/folders/${esc(c.driveFolderId)}" target="_blank" rel="noopener">Open in Drive</a>
+    </div>`;
+  }
+  return `<div class="card" style="background:var(--cream);display:flex;justify-content:space-between;align-items:center;gap:8px">
+    <div class="small">No Drive folder for this case yet.</div>
+    <button class="btn btn-outline btn-sm" onclick="driveCreateCaseFolder('${c.id}').then(route).catch(e=>toast(e.message))">Create Drive folder</button>
+  </div>`;
+}
+function driveDocButtonHtml(c,d){
+  if(!driveIsConnected() || !d.fileId) return '';
+  if(d.driveFileId){
+    return `<div class="small" style="margin-top:4px"><a href="${esc(d.driveLink||('https://drive.google.com/file/d/'+d.driveFileId+'/view'))}" target="_blank" rel="noopener">✓ In Google Drive — open</a></div>`;
+  }
+  return `<div style="margin-top:6px"><button class="btn btn-outline btn-sm" onclick="driveUploadDocument('${d.id}')">Upload copy to Drive</button></div>`;
+}
+async function driveUploadDocument(docId){
+  const d = DB.documents.find(x=>x.id===docId); if(!d || !d.fileId) return;
+  const c = caseById(d.caseId); if(!c) return;
+  try{
+    toast('Uploading to Drive...');
+    if(!c.driveFolderId) await driveCreateCaseFolder(c.id);
+    const rec = await idbGet(d.fileId); if(!rec || !rec.blob) throw new Error('File not found on this device');
+    const parentId = (c.driveSubfolders && c.driveSubfolders[d.type]) || c.driveFolderId;
+    const meta = {name: d.fileName || d.name, parents:[parentId]};
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(meta)], {type:'application/json'}));
+    form.append('file', rec.blob);
+    const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink', {
+      method:'POST', headers:{Authorization:'Bearer '+driveToken}, body: form
+    });
+    if(!res.ok) throw new Error('Upload failed ('+res.status+')');
+    const json = await res.json();
+    d.driveFileId = json.id; d.driveLink = json.webViewLink || ('https://drive.google.com/file/d/'+json.id+'/view');
+    saveKey('documents'); toast('Uploaded to Drive'); route();
+  }catch(e){ toast('Drive upload failed: '+e.message); }
+}
+
+/* ============== INIT ============== */
+loadDB();
+registerServiceWorker();
+</script>
+</body>
+</html>
